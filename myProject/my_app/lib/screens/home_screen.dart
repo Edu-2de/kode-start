@@ -140,22 +140,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: _toggleDrawer,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(4),
                           child: Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.grey[700]!,
-                                width: 1,
-                              ),
+                            width: 24,
+                            height: 24,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
                             ),
                             child: const Icon(
                               Icons.menu,
                               color: Colors.white,
-                              size: 18,
+                              size: 24,
                             ),
                           ),
                         ),
@@ -175,30 +170,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                       const Spacer(),
                       // Profile Icon
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            // Adicionar ação do perfil aqui se necessário
-                          },
-                          borderRadius: BorderRadius.circular(16),
-                          child: Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.grey[700]!,
-                                width: 1,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                          ),
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[600],
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 20,
                         ),
                       ),
                     ],

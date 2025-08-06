@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/character.dart';
 import '../services/rick_and_morty_service.dart';
 import 'character_detail_screen.dart';
+import '../widgets/custom_drawer.dart';
 
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
@@ -11,11 +12,15 @@ class FilterScreen extends StatefulWidget {
   State<FilterScreen> createState() => _FilterScreenState();
 }
 
-class _FilterScreenState extends State<FilterScreen> {
+class _FilterScreenState extends State<FilterScreen> with TickerProviderStateMixin {
   List<Character> filteredCharacters = [];
   bool isLoading = false;
   bool hasFiltered = false;
   String? errorMessage;
+  bool isDrawerOpen = false;
+  bool isFilterCollapsed = false;
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
 
   // Filtros
   String? selectedStatus;
@@ -38,6 +43,48 @@ class _FilterScreenState extends State<FilterScreen> {
     'disease',
     'mythological creature',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(-1.0, 0.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _toggleDrawer() {
+    setState(() {
+      isDrawerOpen = !isDrawerOpen;
+    });
+    
+    if (isDrawerOpen) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
+
+  void _toggleFilterCollapse() {
+    setState(() {
+      isFilterCollapsed = !isFilterCollapsed;
+    });
+  }
 
   Future<void> _applyFilters() async {
     setState(() {
@@ -106,218 +153,248 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
-      body: SafeArea(
-        top: true,
-        bottom: true,
-        left: true,
-        right: true,
-        child: Column(
-          children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Row(
-                children: [
-                  // Back button
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        if (Navigator.canPop(context)) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        width: 32,
-                        height: 32,
+      body: Stack(
+        children: [
+          SafeArea(
+            top: true,
+            bottom: true,
+            left: true,
+            right: true,
+            child: Column(
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: Row(
+                    children: [
+                      // Menu button
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _toggleDrawer,
+                          borderRadius: BorderRadius.circular(4),
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                            ),
+                            child: const Icon(
+                              Icons.menu,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      // Logo
+                      Container(
+                        width: 60,
+                        height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.grey[800],
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.grey[700]!,
-                            width: 1,
-                          ),
                         ),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 18,
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
-                    ),
+                      const Spacer(),
+                      // Profile Icon
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            // Adicionar ação do perfil aqui se necessário
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[800],
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.grey[700]!,
+                                width: 1,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const Spacer(),
-                  // Logo
-                  Container(
-                    width: 60,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      fit: BoxFit.contain,
-                    ),
+                ),
+
+                // Título
+                const Text(
+                  'FILTER CHARACTERS',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 2,
                   ),
-                  const Spacer(),
-                  // Profile Icon
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        // Adicionar ação do perfil aqui se necessário
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        width: 32,
-                        height: 32,
+                ),
+
+                const SizedBox(height: 30),
+
+                // Lista de conteúdo
+                Expanded(
+                  child: Column(
+                    children: [
+                      // Controles de filtro
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.grey[700]!,
-                            width: 1,
-                          ),
+                          color: const Color(0xFF2A2A2A),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Título
-            const Text(
-              'FILTER CHARACTERS',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 2,
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Filtros
-            Expanded(
-              child: Column(
-                children: [
-                  // Controles de filtro
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2A2A2A),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Filters',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Status Filter
-                        _buildFilterDropdown(
-                          label: 'Status',
-                          value: selectedStatus,
-                          items: statusOptions,
-                          onChanged: (value) =>
-                              setState(() => selectedStatus = value),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Gender Filter
-                        _buildFilterDropdown(
-                          label: 'Gender',
-                          value: selectedGender,
-                          items: genderOptions,
-                          onChanged: (value) =>
-                              setState(() => selectedGender = value),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Species Filter
-                        _buildFilterDropdown(
-                          label: 'Species',
-                          value: selectedSpecies,
-                          items: speciesOptions,
-                          onChanged: (value) =>
-                              setState(() => selectedSpecies = value),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Botões
-                        Row(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _clearFilters,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey[700],
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                            // Header with collapse button
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Filters',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                child: const Text(
-                                  'Clear',
-                                  style: TextStyle(color: Colors.white),
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: _toggleFilterCollapse,
+                                    borderRadius: BorderRadius.circular(4),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Icon(
+                                        isFilterCollapsed 
+                                          ? Icons.expand_more 
+                                          : Icons.expand_less,
+                                        color: Colors.grey[400],
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _applyFilters,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Apply',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                            
+                            if (!isFilterCollapsed) ...[
+                              const SizedBox(height: 20),
+
+                              // Status Filter
+                              _buildFilterDropdown(
+                                label: 'Status',
+                                value: selectedStatus,
+                                items: statusOptions,
+                                onChanged: (value) =>
+                                    setState(() => selectedStatus = value),
                               ),
-                            ),
+
+                              const SizedBox(height: 16),
+
+                              // Gender Filter
+                              _buildFilterDropdown(
+                                label: 'Gender',
+                                value: selectedGender,
+                                items: genderOptions,
+                                onChanged: (value) =>
+                                    setState(() => selectedGender = value),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // Species Filter
+                              _buildFilterDropdown(
+                                label: 'Species',
+                                value: selectedSpecies,
+                                items: speciesOptions,
+                                onChanged: (value) =>
+                                    setState(() => selectedSpecies = value),
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              // Botões
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: _clearFilters,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey[700],
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Clear',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: _applyFilters,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Apply',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Resultados
+                      Expanded(child: _buildResults()),
+                    ],
                   ),
-
-                  const SizedBox(height: 20),
-
-                  // Resultados
-                  Expanded(child: _buildResults()),
-                ],
-              ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Drawer overlay e drawer
+          if (isDrawerOpen) ...[
+            DrawerOverlay(onTap: _toggleDrawer),
+            SlideTransition(
+              position: _slideAnimation,
+              child: const CustomDrawer(),
             ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -334,7 +411,7 @@ class _FilterScreenState extends State<FilterScreen> {
         Text(
           label,
           style: TextStyle(
-            color: Colors.grey[400],
+            color: Colors.grey[300],
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -342,7 +419,7 @@ class _FilterScreenState extends State<FilterScreen> {
         const SizedBox(height: 8),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             color: const Color(0xFF1A1A1A),
             borderRadius: BorderRadius.circular(8),
@@ -355,9 +432,10 @@ class _FilterScreenState extends State<FilterScreen> {
                 'Select $label',
                 style: TextStyle(color: Colors.grey[500]),
               ),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
               dropdownColor: const Color(0xFF2A2A2A),
               style: const TextStyle(color: Colors.white),
-              items: items.map((String item) {
+              items: items.map((item) {
                 return DropdownMenuItem<String>(
                   value: item,
                   child: Text(
@@ -375,23 +453,6 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget _buildResults() {
-    if (!hasFiltered) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.filter_alt, size: 64, color: Colors.grey[600]),
-            const SizedBox(height: 16),
-            Text(
-              'Select filters and tap Apply to see results',
-              style: TextStyle(color: Colors.grey[400], fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(
@@ -405,11 +466,33 @@ class _FilterScreenState extends State<FilterScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.grey[600]),
+            const Icon(Icons.error_outline, color: Colors.red, size: 64),
             const SizedBox(height: 16),
             Text(
               errorMessage!,
-              style: TextStyle(color: Colors.grey[400], fontSize: 16),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _applyFilters,
+              child: const Text('Try Again'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (!hasFiltered) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.filter_list, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              'Select filters and tap Apply to see results',
+              style: TextStyle(color: Colors.grey, fontSize: 16),
               textAlign: TextAlign.center,
             ),
           ],
@@ -418,15 +501,15 @@ class _FilterScreenState extends State<FilterScreen> {
     }
 
     if (filteredCharacters.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 64, color: Colors.grey[600]),
-            const SizedBox(height: 16),
+            Icon(Icons.search_off, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
             Text(
               'No characters found with the selected filters',
-              style: TextStyle(color: Colors.grey[400], fontSize: 16),
+              style: TextStyle(color: Colors.grey, fontSize: 16),
               textAlign: TextAlign.center,
             ),
           ],
@@ -445,6 +528,7 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget _buildCharacterCard(Character character) {
+    // Definir cor baseada no status
     Color statusColor;
     switch (character.status.toLowerCase()) {
       case 'alive':
@@ -567,23 +651,25 @@ class _FilterScreenState extends State<FilterScreen> {
                         ],
                       ),
 
-                      // Gênero e episódios
+                      // Localização
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Gender: ${character.gender}',
+                            'Last known location:',
                             style: TextStyle(
                               color: Colors.grey[500],
                               fontSize: 12,
                             ),
                           ),
                           Text(
-                            'Episodes: ${character.episode.length}',
+                            character.location.name,
                             style: TextStyle(
                               color: Colors.grey[300],
-                              fontSize: 12,
+                              fontSize: 14,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),

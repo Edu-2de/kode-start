@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/character.dart';
 import '../services/rick_and_morty_service.dart';
 import 'character_detail_screen.dart';
+import '../widgets/custom_drawer.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -11,17 +12,52 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen>
+    with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   List<Character> searchResults = [];
   bool isLoading = false;
   bool hasSearched = false;
   String? errorMessage;
+  bool isDrawerOpen = false;
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(-1.0, 0.0), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _animationController.dispose();
     super.dispose();
+  }
+
+  void _toggleDrawer() {
+    setState(() {
+      isDrawerOpen = !isDrawerOpen;
+    });
+
+    if (isDrawerOpen) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
   }
 
   Future<void> _searchCharacters(String query) async {
@@ -52,132 +88,142 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
-      body: SafeArea(
-        top: true,
-        bottom: true,
-        left: true,
-        right: true,
-        child: Column(
-          children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Row(
-                children: [
-                  // Back button
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        if (Navigator.canPop(context)) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  // Logo
-                  Container(
-                    width: 60,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  const Spacer(),
-                  // Profile Icon
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        // Adicionar ação do perfil aqui se necessário
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.grey[700]!,
-                            width: 1,
+      body: Stack(
+        children: [
+          SafeArea(
+            top: true,
+            bottom: true,
+            left: true,
+            right: true,
+            child: Column(
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: Row(
+                    children: [
+                      // Menu button
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _toggleDrawer,
+                          borderRadius: BorderRadius.circular(4),
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                            ),
+                            child: const Icon(
+                              Icons.menu,
+                              color: Colors.white,
+                              size: 24,
+                            ),
                           ),
                         ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 18,
+                      ),
+                      const Spacer(),
+                      // Logo
+                      Container(
+                        width: 60,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
-                    ),
+                      const Spacer(),
+                      // Profile Icon
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            // Adicionar ação do perfil aqui se necessário
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[800],
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.grey[700]!,
+                                width: 1,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-
-            // Título
-            const Text(
-              'SEARCH CHARACTERS',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 2,
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Search field
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2A2A2A),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: _searchController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Digite o nome do personagem...',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.blue),
-                    onPressed: () => _searchCharacters(_searchController.text),
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.all(16),
                 ),
-                onSubmitted: _searchCharacters,
-              ),
+
+                // Título
+                const Text(
+                  'SEARCH CHARACTERS',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 2,
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Search field
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2A2A2A),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Digite o nome do personagem...',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.send, color: Colors.blue),
+                        onPressed: () =>
+                            _searchCharacters(_searchController.text),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
+                    onSubmitted: _searchCharacters,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Results
+                Expanded(child: _buildSearchResults()),
+              ],
             ),
+          ),
 
-            const SizedBox(height: 20),
+          // Drawer overlay
+          if (isDrawerOpen) DrawerOverlay(onTap: _toggleDrawer),
 
-            // Results
-            Expanded(child: _buildSearchResults()),
-          ],
-        ),
+          // Drawer
+          if (isDrawerOpen)
+            SlideTransition(
+              position: _slideAnimation,
+              child: const CustomDrawer(),
+            ),
+        ],
       ),
     );
   }
