@@ -83,10 +83,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
       final response = await RickAndMortyService.getCharacters(page: 1);
       setState(() {
-        // Limitar a apenas 10 personagens para melhor performance
-        characters = response.results.take(10).toList();
+        // Carregar todos os personagens normalmente
+        characters = response.results;
         currentPage = 1;
-        hasMore = false; // Desabilitar carregamento de mais personagens
+        hasMore = response.info.next != null;
         isLoading = false;
       });
     } catch (e) {

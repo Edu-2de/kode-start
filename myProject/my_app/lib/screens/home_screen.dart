@@ -17,10 +17,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<Character> characters = [];
+  List<Character> allCharacters = []; // Lista completa de todos os personagens
   bool isLoading = true;
   bool hasError = false;
   int currentPage = 1;
   bool hasMore = true;
+  bool isThemeChanging = false; // Flag para indicar que o tema está mudando
   final ScrollController _scrollController = ScrollController();
   bool isDrawerOpen = false;
   late AnimationController _animationController;
@@ -44,13 +46,73 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             curve: Curves.easeInOut,
           ),
         );
+
+    // Escutar mudanças de tema
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<ThemeProvider>(
+          context,
+          listen: false,
+        ).addListener(_onThemeChanged);
+      }
+    });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     _animationController.dispose();
+
+    // Remover listener de tema
+    if (mounted) {
+      try {
+        Provider.of<ThemeProvider>(
+          context,
+          listen: false,
+        ).removeListener(_onThemeChanged);
+      } catch (e) {
+        // Ignorar erro se o provider já foi removido
+      }
+    }
+
     super.dispose();
+  }
+
+  void _onThemeChanged() {
+    if (!mounted) return;
+
+    setState(() {
+      isThemeChanging = true;
+      // Durante mudança de tema, mostrar apenas os primeiros 5 personagens
+      if (allCharacters.isNotEmpty) {
+        characters = allCharacters.take(5).toList();
+      }
+    });
+
+    // Após um pequeno delay, restaurar todos os personagens gradualmente
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _restoreAllCharactersGradually();
+      }
+    });
+  }
+
+  void _restoreAllCharactersGradually() async {
+    if (!mounted || allCharacters.isEmpty) return;
+
+    setState(() {
+      isThemeChanging = false;
+    });
+
+    // Restaurar personagens em lotes de 5, com delay entre cada lote
+    for (int i = 5; i < allCharacters.length; i += 5) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      if (!mounted) break;
+
+      setState(() {
+        characters = allCharacters.take(i + 5).toList();
+      });
+    }
   }
 
   void _toggleDrawer() {
@@ -83,10 +145,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
       final response = await RickAndMortyService.getCharacters(page: 1);
       setState(() {
-        // Limitar a apenas 10 personagens para melhor performance
-        characters = response.results.take(10).toList();
+        // Armazenar todos os personagens
+        allCharacters = response.results;
+        // Mostrar todos inicialmente (só limitará durante mudança de tema)
+        characters = response.results;
         currentPage = 1;
-        hasMore = false; // Desabilitar carregamento de mais personagens
+        hasMore = response.info.next != null;
         isLoading = false;
       });
     } catch (e) {
@@ -98,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _loadMore() async {
-    if (!hasMore || isLoading) return;
+    if (!hasMore || isLoading || isThemeChanging) return;
 
     try {
       setState(() {
@@ -109,7 +173,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         page: currentPage + 1,
       );
       setState(() {
-        characters.addAll(response.results);
+        // Adicionar novos personagens à lista completa
+        allCharacters.addAll(response.results);
+
+        // Se não estamos mudando tema, mostrar todos
+        if (!isThemeChanging) {
+          characters.addAll(response.results);
+        }
+
         currentPage++;
         hasMore = response.info.next != null;
         isLoading = false;
@@ -258,48 +329,82 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       );
     }
 
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 5),
-      itemCount: characters.length + (hasMore ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index >= characters.length) {
-          return const Padding(
-            padding: EdgeInsets.all(20),
-            child: Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-              ),
+    return Column(
+      children: [
+        // Indicador de mudança de tema
+        if (isThemeChanging)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      style == AppStyle.modern ? Colors.blue : Colors.purple,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Aplicando tema...',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                ),
+              ],
             ),
-          );
-        }
+          ),
 
-        final character = characters[index];
+        // Lista de personagens
+        Expanded(
+          child: ListView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 5),
+            itemCount:
+                characters.length + (hasMore && !isThemeChanging ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index >= characters.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    ),
+                  ),
+                );
+              }
 
-        if (style == AppStyle.modern) {
-          return CharacterCardModern(
-            character: character,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    CharacterDetailScreen(character: character),
-              ),
-            ),
-          );
-        } else {
-          return CharacterCardClassic(
-            character: character,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    CharacterDetailScreen(character: character),
-              ),
-            ),
-          );
-        }
-      },
+              final character = characters[index];
+
+              if (style == AppStyle.modern) {
+                return CharacterCardModern(
+                  character: character,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CharacterDetailScreen(character: character),
+                    ),
+                  ),
+                );
+              } else {
+                return CharacterCardClassic(
+                  character: character,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CharacterDetailScreen(character: character),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }
