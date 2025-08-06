@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ),
 
-                // Título "RICK AND MORTY API"
+ 
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: const Text(
@@ -203,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                 const SizedBox(height: 30),
 
-                // Lista de personagens
                 Expanded(
                   child: hasError
                       ? _buildErrorWidget()
@@ -236,13 +235,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const Icon(Icons.error_outline, color: Colors.red, size: 64),
           const SizedBox(height: 16),
           const Text(
-            'Erro ao carregar personagens',
+            'Error loading characters',
             style: TextStyle(color: Colors.white, fontSize: 18),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadCharacters,
-            child: const Text('Tentar novamente'),
+            child: const Text('Try again'),
           ),
         ],
       ),
@@ -281,7 +280,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildCharacterCard(Character character) {
-    // Definir cor baseada no status
     Color statusColor;
     switch (character.status.toLowerCase()) {
       case 'alive':
@@ -320,7 +318,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           child: Row(
             children: [
-              // Imagem do personagem
               Container(
                 width: 120,
                 height: 120,
@@ -357,7 +354,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
 
-              // Informações do personagem
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
@@ -365,7 +361,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Nome do personagem
                       Text(
                         character.name.toUpperCase(),
                         style: const TextStyle(
@@ -378,7 +373,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         overflow: TextOverflow.ellipsis,
                       ),
 
-                      // Status e espécie
                       Row(
                         children: [
                           Container(
@@ -404,7 +398,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ],
                       ),
 
-                      // Localização
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

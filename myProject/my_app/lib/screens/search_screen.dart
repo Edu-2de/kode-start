@@ -79,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen>
       setState(() {
         searchResults = [];
         isLoading = false;
-        errorMessage = 'Nenhum personagem encontrado com esse nome';
+        errorMessage = 'No character found with that name';
       });
     }
   }
@@ -141,7 +141,7 @@ class _SearchScreenState extends State<SearchScreen>
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
-                            // Adicionar ação do perfil aqui se necessário
+                            // TODO add profile section
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
@@ -167,7 +167,6 @@ class _SearchScreenState extends State<SearchScreen>
                   ),
                 ),
 
-                // Título
                 const Text(
                   'SEARCH CHARACTERS',
                   style: TextStyle(
@@ -191,7 +190,7 @@ class _SearchScreenState extends State<SearchScreen>
                     controller: _searchController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: 'Digite o nome do personagem...',
+                      hintText: 'Enter the character name...',
                       hintStyle: TextStyle(color: Colors.grey[400]),
                       prefixIcon: const Icon(Icons.search, color: Colors.grey),
                       suffixIcon: IconButton(
@@ -237,7 +236,7 @@ class _SearchScreenState extends State<SearchScreen>
             Icon(Icons.search, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text(
-              'Digite o nome de um personagem para pesquisar',
+              'Enter a character name to search',
               style: TextStyle(color: Colors.grey, fontSize: 16),
               textAlign: TextAlign.center,
             ),
@@ -320,7 +319,6 @@ class _SearchScreenState extends State<SearchScreen>
           ),
           child: Row(
             children: [
-              // Imagem do personagem
               Container(
                 width: 120,
                 height: 120,
@@ -357,7 +355,6 @@ class _SearchScreenState extends State<SearchScreen>
                 ),
               ),
 
-              // Informações do personagem
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
@@ -365,7 +362,6 @@ class _SearchScreenState extends State<SearchScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Nome do personagem
                       Text(
                         character.name.toUpperCase(),
                         style: const TextStyle(
@@ -378,7 +374,6 @@ class _SearchScreenState extends State<SearchScreen>
                         overflow: TextOverflow.ellipsis,
                       ),
 
-                      // Status e espécie
                       Row(
                         children: [
                           Container(
@@ -404,7 +399,6 @@ class _SearchScreenState extends State<SearchScreen>
                         ],
                       ),
 
-                      // Localização
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

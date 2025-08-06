@@ -76,7 +76,7 @@ class CustomDrawer extends StatelessWidget {
                     title: 'Home',
                     subtitle: 'All characters',
                     onTap: () {
-                      Navigator.pop(context); // Fecha o drawer
+                      Navigator.pop(context); 
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         '/',
@@ -91,7 +91,7 @@ class CustomDrawer extends StatelessWidget {
                     title: 'Search',
                     subtitle: 'Find characters',
                     onTap: () {
-                      Navigator.pop(context); // Fecha o drawer
+                      Navigator.pop(context); 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -107,7 +107,7 @@ class CustomDrawer extends StatelessWidget {
                     title: 'Filters',
                     subtitle: 'Filter by category',
                     onTap: () {
-                      Navigator.pop(context); // Fecha o drawer
+                      Navigator.pop(context); 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -207,7 +207,6 @@ class CustomDrawer extends StatelessWidget {
   }
 }
 
-// Widget para o overlay que escurece a tela
 class DrawerOverlay extends StatelessWidget {
   final VoidCallback onTap;
 

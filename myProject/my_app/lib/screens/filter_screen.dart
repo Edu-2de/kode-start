@@ -23,7 +23,6 @@ class _FilterScreenState extends State<FilterScreen>
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
 
-  // Filtros
   String? selectedStatus;
   String? selectedGender;
   String? selectedSpecies;
@@ -95,21 +94,20 @@ class _FilterScreenState extends State<FilterScreen>
     });
 
     try {
-      // Como a API do Rick and Morty não suporta múltiplos filtros simultaneamente,
-      // vamos carregar todos os personagens e filtrar localmente
+      /* Since the Rick and Morty API doesn't support multiple filters simultaneously,
+       I'll load all characters and filter locally*/
       List<Character> allCharacters = [];
       int page = 1;
       bool hasMore = true;
 
       while (hasMore && page <= 5) {
-        // Limitamos a 5 páginas para não sobrecarregar
+        // I limit it to 5 pages to avoid overload.
         final response = await RickAndMortyService.getCharacters(page: page);
         allCharacters.addAll(response.results);
         hasMore = response.info.next != null;
         page++;
       }
 
-      // Aplicar filtros
       List<Character> filtered = allCharacters.where((character) {
         bool matchesStatus =
             selectedStatus == null ||
@@ -134,7 +132,7 @@ class _FilterScreenState extends State<FilterScreen>
       setState(() {
         filteredCharacters = [];
         isLoading = false;
-        errorMessage = 'Erro ao carregar personagens';
+        errorMessage = 'Error loading characters';
       });
     }
   }
@@ -207,7 +205,6 @@ class _FilterScreenState extends State<FilterScreen>
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
-                            // Adicionar ação do perfil aqui se necessário
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
@@ -233,7 +230,6 @@ class _FilterScreenState extends State<FilterScreen>
                   ),
                 ),
 
-                // Título
                 const Text(
                   'FILTER CHARACTERS',
                   style: TextStyle(
@@ -246,11 +242,9 @@ class _FilterScreenState extends State<FilterScreen>
 
                 const SizedBox(height: 30),
 
-                // Lista de conteúdo
                 Expanded(
                   child: Column(
                     children: [
-                      // Controles de filtro
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 20),
                         padding: const EdgeInsets.all(20),
@@ -329,7 +323,6 @@ class _FilterScreenState extends State<FilterScreen>
 
                               const SizedBox(height: 24),
 
-                              // Botões
                               Row(
                                 children: [
                                   Expanded(
@@ -382,7 +375,6 @@ class _FilterScreenState extends State<FilterScreen>
 
                       const SizedBox(height: 20),
 
-                      // Resultados
                       Expanded(child: _buildResults()),
                     ],
                   ),
@@ -533,7 +525,6 @@ class _FilterScreenState extends State<FilterScreen>
   }
 
   Widget _buildCharacterCard(Character character) {
-    // Definir cor baseada no status
     Color statusColor;
     switch (character.status.toLowerCase()) {
       case 'alive':
@@ -572,7 +563,6 @@ class _FilterScreenState extends State<FilterScreen>
           ),
           child: Row(
             children: [
-              // Imagem do personagem
               Container(
                 width: 120,
                 height: 120,
@@ -609,7 +599,7 @@ class _FilterScreenState extends State<FilterScreen>
                 ),
               ),
 
-              // Informações do personagem
+
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
@@ -617,7 +607,6 @@ class _FilterScreenState extends State<FilterScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Nome do personagem
                       Text(
                         character.name.toUpperCase(),
                         style: const TextStyle(
@@ -630,7 +619,7 @@ class _FilterScreenState extends State<FilterScreen>
                         overflow: TextOverflow.ellipsis,
                       ),
 
-                      // Status e espécie
+
                       Row(
                         children: [
                           Container(
@@ -656,7 +645,7 @@ class _FilterScreenState extends State<FilterScreen>
                         ],
                       ),
 
-                      // Localização
+
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

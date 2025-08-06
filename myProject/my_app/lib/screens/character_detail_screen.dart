@@ -9,7 +9,6 @@ class CharacterDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Definir cor baseada no status
     Color statusColor;
     switch (character.status.toLowerCase()) {
       case 'alive':
@@ -31,12 +30,10 @@ class CharacterDetailScreen extends StatelessWidget {
         right: true,
         child: Column(
           children: [
-            // Header com logo e botão voltar
             Container(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
               child: Row(
                 children: [
-                  // Botão voltar
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -84,7 +81,7 @@ class CharacterDetailScreen extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        // Adicionar ação do perfil aqui se necessário
+                        // TODO profile section
                       },
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
@@ -110,7 +107,6 @@ class CharacterDetailScreen extends StatelessWidget {
               ),
             ),
 
-            // Título "RICK AND MORTY API"
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: const Text(
@@ -126,7 +122,6 @@ class CharacterDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // Conteúdo principal
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -144,7 +139,6 @@ class CharacterDetailScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      // Imagem do personagem
                       Container(
                         width: double.infinity,
                         height: 300,
@@ -185,14 +179,12 @@ class CharacterDetailScreen extends StatelessWidget {
                         ),
                       ),
 
-                      // Informações do personagem
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Nome do personagem
                             Text(
                               character.name.toUpperCase(),
                               style: const TextStyle(
@@ -205,7 +197,6 @@ class CharacterDetailScreen extends StatelessWidget {
 
                             const SizedBox(height: 16),
 
-                            // Status e espécie
                             Row(
                               children: [
                                 Container(
@@ -230,17 +221,14 @@ class CharacterDetailScreen extends StatelessWidget {
 
                             const SizedBox(height: 24),
 
-                            // Gênero
                             _buildDetailItem('Gender:', character.gender),
 
                             const SizedBox(height: 16),
 
-                            // Origem
                             _buildDetailItem('Origin:', character.origin.name),
 
                             const SizedBox(height: 16),
 
-                            // Localização atual
                             _buildDetailItem(
                               'Last known location:',
                               character.location.name,
@@ -248,7 +236,7 @@ class CharacterDetailScreen extends StatelessWidget {
 
                             const SizedBox(height: 16),
 
-                            // Tipo (se disponível)
+
                             if (character.type.isNotEmpty)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +246,6 @@ class CharacterDetailScreen extends StatelessWidget {
                                 ],
                               ),
 
-                            // Número de episódios
                             _buildDetailItem(
                               'Episodes:',
                               '${character.episode.length} episodes',
