@@ -5,9 +5,7 @@ import '../screens/search_screen.dart';
 import '../screens/filter_screen.dart';
 
 class CustomDrawer extends StatelessWidget {
-  final VoidCallback? onClose;
-
-  const CustomDrawer({super.key, this.onClose});
+  const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +76,7 @@ class CustomDrawer extends StatelessWidget {
                         title: 'Home',
                         subtitle: 'All characters',
                         onTap: () {
-                          // Fechar drawer usando callback se disponível
-                          if (onClose != null) {
-                            onClose!();
-                          } else {
-                            Navigator.pop(context);
-                          }
+                          Navigator.pop(context);
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             '/',
@@ -97,12 +90,7 @@ class CustomDrawer extends StatelessWidget {
                         title: 'Search',
                         subtitle: 'Find characters',
                         onTap: () {
-                          // Fechar drawer usando callback se disponível
-                          if (onClose != null) {
-                            onClose!();
-                          } else {
-                            Navigator.pop(context);
-                          }
+                          Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -117,12 +105,7 @@ class CustomDrawer extends StatelessWidget {
                         title: 'Filters',
                         subtitle: 'Filter by category',
                         onTap: () {
-                          // Fechar drawer usando callback se disponível
-                          if (onClose != null) {
-                            onClose!();
-                          } else {
-                            Navigator.pop(context);
-                          }
+                          Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -131,23 +114,82 @@ class CustomDrawer extends StatelessWidget {
                           );
                         },
                       ),
-                      // Style/theme selector - Versão super simplificada
-                      _buildMenuItem(
-                        context,
-                        icon: Icons.palette,
-                        title: 'Change Theme',
-                        subtitle: themeProvider.currentStyle == AppStyle.modern
-                            ? 'Switch to Classic'
-                            : 'Switch to Modern',
-                        onTap: () {
-                          // Fazer a mudança de tema
-                          themeProvider.toggleStyle();
-
-                          // Fechar o drawer usando o callback do HomeScreen
-                          if (onClose != null) {
-                            onClose!();
-                          }
-                        },
+                      // Style/theme selector
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              themeProvider.toggleStyle();
+                              Navigator.pop(context);
+                            },
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.grey[800]!,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      color: Colors.purple.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      Icons.palette,
+                                      color: Colors.purple,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Change Theme',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          themeProvider.currentStyle ==
+                                                  AppStyle.modern
+                                              ? 'Switch to Classic'
+                                              : 'Switch to Modern',
+                                          style: TextStyle(
+                                            color: Colors.grey[400],
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.grey[600],
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -182,9 +224,6 @@ class CustomDrawer extends StatelessWidget {
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    // Cor especial para o ícone de palette
-    final iconColor = icon == Icons.palette ? Colors.purple : Colors.blue;
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Material(
@@ -204,10 +243,10 @@ class CustomDrawer extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.1),
+                    color: Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: iconColor, size: 24),
+                  child: Icon(icon, color: Colors.blue, size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -256,7 +295,7 @@ class DrawerOverlay extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: double.infinity,
-        color: Colors.black.withValues(alpha: 0.5),
+        color: Colors.black.withOpacity(0.5),
       ),
     );
   }

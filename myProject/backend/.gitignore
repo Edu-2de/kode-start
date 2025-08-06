@@ -26,6 +26,5 @@ coverage/
 
 .node_repl_history
 
-# Build directory (se existir)
 dist/
 build/

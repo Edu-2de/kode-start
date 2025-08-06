@@ -123,56 +123,53 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        final style = themeProvider.currentStyle;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final style = themeProvider.currentStyle;
 
-        return Scaffold(
-          backgroundColor: style == AppStyle.modern
-              ? const Color(0xFF18181B)
-              : const Color(0xFF1A1A1A),
-          body: Stack(
-            children: [
-              SafeArea(
-                child: Column(
-                  children: [
-                    _buildHeader(style),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        'RICK AND MORTY API',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: style == AppStyle.modern
-                              ? FontWeight.w400
-                              : FontWeight.w600,
-                          letterSpacing: 2,
-                        ),
-                      ),
+    return Scaffold(
+      backgroundColor: style == AppStyle.modern
+          ? const Color(0xFF18181B)
+          : const Color(0xFF1A1A1A),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(style),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'RICK AND MORTY API',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: style == AppStyle.modern
+                          ? FontWeight.w400
+                          : FontWeight.w600,
+                      letterSpacing: 2,
                     ),
-                    const SizedBox(height: 30),
-                    Expanded(
-                      child: hasError
-                          ? _buildErrorWidget()
-                          : isLoading && characters.isEmpty
-                          ? _buildLoadingWidget()
-                          : _buildCharactersList(style),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              if (isDrawerOpen) ...[
-                DrawerOverlay(onTap: _toggleDrawer),
-                SlideTransition(
-                  position: _slideAnimation,
-                  child: CustomDrawer(onClose: _toggleDrawer),
+                const SizedBox(height: 30),
+                Expanded(
+                  child: hasError
+                      ? _buildErrorWidget()
+                      : isLoading && characters.isEmpty
+                      ? _buildLoadingWidget()
+                      : _buildCharactersList(style),
                 ),
               ],
-            ],
+            ),
           ),
-        );
-      },
+          if (isDrawerOpen) ...[
+            DrawerOverlay(onTap: _toggleDrawer),
+            SlideTransition(
+              position: _slideAnimation,
+              child: const CustomDrawer(),
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -189,19 +186,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: InkWell(
               onTap: _toggleDrawer,
               borderRadius: BorderRadius.circular(4),
-              child: Container(
+              child: SizedBox(
                 width: 24,
                 height: 24,
-                decoration: const BoxDecoration(color: Colors.transparent),
                 child: const Icon(Icons.menu, color: Colors.white, size: 24),
               ),
             ),
           ),
           const Spacer(),
-          Container(
-            width: style == AppStyle.modern ? 80 : 60, // Logo maior no modern
-            height: style == AppStyle.modern ? 55 : 40, // Logo maior no modern
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          SizedBox(
+            width: style == AppStyle.modern ? 80 : 60,
+            height: style == AppStyle.modern ? 55 : 40,
             child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
           ),
           const Spacer(),
@@ -249,15 +244,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildCharactersList(AppStyle style) {
-    if (characters.isEmpty) {
-      return Center(
-        child: Text(
-          'No characters loaded',
-          style: TextStyle(color: Colors.white),
-        ),
-      );
-    }
-
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 5),
@@ -276,29 +262,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
         final character = characters[index];
 
-        if (style == AppStyle.modern) {
-          return CharacterCardModern(
-            character: character,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    CharacterDetailScreen(character: character),
-              ),
-            ),
-          );
-        } else {
-          return CharacterCardClassic(
-            character: character,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    CharacterDetailScreen(character: character),
-              ),
-            ),
-          );
-        }
+        return style == AppStyle.modern
+            ? CharacterCardModern(
+                character: character,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CharacterDetailScreen(character: character),
+                    ),
+                  );
+                },
+              )
+            : CharacterCardClassic(
+                character: character,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CharacterDetailScreen(character: character),
+                    ),
+                  );
+                },
+              );
       },
     );
   }
