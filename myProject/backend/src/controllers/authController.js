@@ -1,19 +1,19 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const pool = require('../database/connection');
+const pool = require('../config/database');
 
 const authController = {
   // Registro de novo usuário
   register: async (req, res) => {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
 
     try {
       // Validações
-      if (!name || !email || !password) {
+      if (!username || !email || !password) {
         return res.status(400).json({
           error: 'Dados obrigatórios',
-          message: 'Nome, email e senha são obrigatórios',
+          message: 'Username, email e senha são obrigatórios',
         });
       }
 
@@ -39,8 +39,8 @@ const authController = {
 
       // Criar usuário
       const newUser = await pool.query(
-        'INSERT INTO users (name, email, password_hash, coins, total_coins_earned) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, coins',
-        [name, email, hashedPassword, 50, 50] // 50 moedas iniciais
+        'INSERT INTO users (username, email, password_hash, coins, total_coins_earned) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, email, coins',
+        [username, email, hashedPassword, 50, 50] // 50 moedas iniciais
       );
 
       // Registrar transação de moedas iniciais
@@ -51,9 +51,10 @@ const authController = {
 
       res.status(201).json({
         message: 'Usuário cadastrado com sucesso!',
+        success: true,
         user: {
           id: newUser.rows[0].id,
-          name: newUser.rows[0].name,
+          username: newUser.rows[0].username,
           email: newUser.rows[0].email,
           coins: newUser.rows[0].coins,
         },
@@ -61,6 +62,7 @@ const authController = {
     } catch (error) {
       console.error('Erro no registro:', error);
       res.status(500).json({
+        success: false,
         error: 'Erro interno do servidor',
         message: 'Erro ao criar conta',
       });
@@ -149,11 +151,12 @@ const authController = {
 
       res.json({
         message: 'Login realizado com sucesso!',
+        success: true,
         token,
         dailyBonus,
         user: {
           id: user.id,
-          name: user.name,
+          username: user.username,
           email: user.email,
           coins: user.coins,
         },
@@ -201,7 +204,7 @@ const authController = {
     try {
       // Buscar dados atualizados do usuário
       const userResult = await pool.query(
-        'SELECT id, name, email, coins, total_coins_earned, created_at FROM users WHERE id = $1',
+        'SELECT id, username, email, coins, total_coins_earned, created_at FROM users WHERE id = $1',
         [req.user.id]
       );
 
@@ -212,10 +215,9 @@ const authController = {
       }
 
       // Buscar estatísticas
-      const unlockedCount = await pool.query(
-        'SELECT COUNT(*) as count FROM user_unlocked_characters WHERE user_id = $1',
-        [req.user.id]
-      );
+      const unlockedCount = await pool.query('SELECT COUNT(*) as count FROM unlocked_characters WHERE user_id = $1', [
+        req.user.id,
+      ]);
 
       const totalCharacters = await pool.query('SELECT COUNT(*) as count FROM characters');
 

@@ -1,18 +1,9 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-console.log('🔧 Database config: ', {
-  connectionString: process.env.DATABASE_URL ? 'Configurado via DATABASE_URL' : 'Não configurado',
-  host: process.env.DATABASE_URL ? 'Via DATABASE_URL' : 'localhost',
-  database: process.env.DATABASE_URL ? 'Via DATABASE_URL' : 'rick_morty_db',
-});
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: Number(process.env.DB_POOL_MAX) || 20,
-  idleTimeoutMillis: Number(process.env.DB_POOL_IDLE_TIMEOUT) || 30000,
-  connectionTimeoutMillis: 2000,
 });
 
 pool.on('connect', () => {

@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/games_screen.dart';
+import 'screens/my_characters_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/game_stats_screen.dart';
+import 'screens/settings_screen.dart';
 import 'providers/theme_provider.dart';
 import 'providers/auth_provider.dart';
 
@@ -32,6 +37,11 @@ class MyApp extends StatelessWidget {
           routes: {
             '/home': (context) => const HomeScreen(),
             '/login': (context) => const LoginScreen(),
+            '/games': (context) => GamesScreen(),
+            '/my-characters': (context) => const MyCharactersScreen(),
+            '/profile': (context) => const ProfileScreen(),
+            '/game-stats': (context) => const GameStatsScreen(),
+            '/settings': (context) => const SettingsScreen(),
           },
         );
       },
@@ -52,15 +62,20 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    _initializeAuth();
+    // Usar WidgetsBinding para evitar setState durante build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeAuth();
+    });
   }
 
   Future<void> _initializeAuth() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.initializeAuth();
-    setState(() {
-      _isInitialized = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
+    }
   }
 
   @override

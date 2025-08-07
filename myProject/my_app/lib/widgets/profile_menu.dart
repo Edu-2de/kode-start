@@ -63,6 +63,7 @@ class ProfileMenu extends StatelessWidget {
           child: _buildUserInfo(authProvider.user!, isModernTheme),
         ),
         _buildMenuItem('profile', Icons.person, 'Profile'),
+        _buildMenuItem('games', Icons.games, 'Games'),
         _buildMenuItem('stats', Icons.bar_chart, 'Game Stats'),
         _buildMenuItem('characters', Icons.collections, 'My Characters'),
         _buildMenuItem('settings', Icons.settings, 'Settings'),
@@ -158,187 +159,24 @@ class ProfileMenu extends StatelessWidget {
   ) {
     switch (value) {
       case 'profile':
-        _showProfileDialog(context, authProvider.user!, isModernTheme);
+        Navigator.pushNamed(context, '/profile');
+        break;
+      case 'games':
+        Navigator.pushNamed(context, '/games');
         break;
       case 'stats':
-        _showStatsDialog(context, isModernTheme);
+        Navigator.pushNamed(context, '/game-stats');
         break;
       case 'characters':
-        _showCharactersDialog(context, isModernTheme);
+        Navigator.pushNamed(context, '/my-characters');
         break;
       case 'settings':
-        _showSettingsDialog(context, themeProvider, isModernTheme);
+        Navigator.pushNamed(context, '/settings');
         break;
       case 'logout':
         _showLogoutConfirmation(context, authProvider, isModernTheme);
         break;
     }
-  }
-
-  void _showProfileDialog(BuildContext context, user, bool isModernTheme) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Profile Information',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildInfoCard('Name', user.name),
-            _buildInfoCard('Email', user.email),
-            _buildInfoCard('Coins', '${user.coins}'),
-            _buildInfoCard('Total Earned', '${user.totalCoinsEarned}'),
-            _buildInfoCard(
-              'Member Since',
-              '${user.createdAt.day}/${user.createdAt.month}/${user.createdAt.year}',
-            ),
-          ],
-        ),
-        actions: [
-          _buildDialogButton(
-            'Close',
-            Colors.green,
-            () => Navigator.pop(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showStatsDialog(BuildContext context, bool isModernTheme) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Game Statistics',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey[800],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            'Coming soon! Your game statistics will be displayed here.',
-            style: TextStyle(color: Colors.grey[300], fontSize: 16),
-          ),
-        ),
-        actions: [
-          _buildDialogButton(
-            'Close',
-            Colors.green,
-            () => Navigator.pop(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showCharactersDialog(BuildContext context, bool isModernTheme) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'My Characters',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey[800],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            'Your unlocked characters will be displayed here soon!',
-            style: TextStyle(color: Colors.grey[300], fontSize: 16),
-          ),
-        ),
-        actions: [
-          _buildDialogButton(
-            'Close',
-            Colors.green,
-            () => Navigator.pop(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showSettingsDialog(
-    BuildContext context,
-    ThemeProvider themeProvider,
-    bool isModernTheme,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          backgroundColor: Colors.grey[900],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: const Text(
-            'Settings',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              leading: const Icon(Icons.palette_outlined, color: Colors.white),
-              title: const Text('Theme', style: TextStyle(color: Colors.white)),
-              subtitle: Text(
-                themeProvider.currentStyle == AppStyle.modern
-                    ? 'Modern'
-                    : 'Classic',
-                style: TextStyle(color: Colors.grey[400]),
-              ),
-              trailing: Switch(
-                value: themeProvider.currentStyle == AppStyle.modern,
-                onChanged: (value) => themeProvider.toggleStyle(),
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.blue,
-              ),
-            ),
-          ),
-          actions: [
-            _buildDialogButton(
-              'Close',
-              Colors.green,
-              () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void _showLogoutConfirmation(
@@ -389,42 +227,6 @@ class ProfileMenu extends StatelessWidget {
               );
             }
           }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(String label, String value) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.grey[800],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              '$label:',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[400],
-                fontSize: 14,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
         ],
       ),
     );

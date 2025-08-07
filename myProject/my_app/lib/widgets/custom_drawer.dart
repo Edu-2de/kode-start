@@ -136,6 +136,21 @@ class CustomDrawer extends StatelessWidget {
                           );
                         },
                       ),
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.sports_esports,
+                        title: 'Games',
+                        subtitle: 'Play mini-games',
+                        onTap: () {
+                          // Close drawer using callback if available
+                          if (onClose != null) {
+                            onClose!();
+                          } else {
+                            Navigator.pop(context);
+                          }
+                          Navigator.pushNamed(context, '/games');
+                        },
+                      ),
                       // Style/theme selector - Super simplified version
                       _buildMenuItem(
                         context,

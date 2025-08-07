@@ -1,7 +1,7 @@
 -- Tabela de usuários
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
+  username VARCHAR(100) NOT NULL, -- Changed from 'name' to 'username' to match GameController
   email VARCHAR(100) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   coins INTEGER NOT NULL DEFAULT 50, -- Moedas iniciais ao criar conta
@@ -10,21 +10,29 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de personagens desbloqueados pelos usuários (salvamos dados da API aqui)
-CREATE TABLE IF NOT EXISTS user_unlocked_characters (
+-- Tabela de personagens desbloqueados pelos usuários (GameController format)
+CREATE TABLE IF NOT EXISTS unlocked_characters (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  character_api_id INTEGER NOT NULL, -- ID do personagem na API Rick and Morty
+  character_id INTEGER NOT NULL, -- ID do personagem na API Rick and Morty
   character_name VARCHAR(100) NOT NULL,
+  character_image VARCHAR(500) NOT NULL,
   character_status VARCHAR(20) NOT NULL,
   character_species VARCHAR(50) NOT NULL,
-  character_gender VARCHAR(20) NOT NULL,
-  character_image VARCHAR(500) NOT NULL,
-  character_rarity VARCHAR(20) NOT NULL DEFAULT 'common', -- common, rare, epic, legendary
-  character_origin VARCHAR(200),
   character_location VARCHAR(200),
+  rarity VARCHAR(20) NOT NULL DEFAULT 'common', -- common, rare, epic, legendary
   unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(user_id, character_api_id) -- Evita que o usuário desbloqueie o mesmo personagem duas vezes
+  UNIQUE(user_id, character_id) -- Evita que o usuário desbloqueie o mesmo personagem duas vezes
+);
+
+-- Tabela de bônus diários (GameController format)
+CREATE TABLE IF NOT EXISTS daily_bonuses (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  coins_received INTEGER NOT NULL DEFAULT 5,
+  claimed_date DATE DEFAULT CURRENT_DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, claimed_date) -- Um bônus por dia
 );
 
 -- Tabela de histórico de transações de moedas
@@ -56,8 +64,31 @@ CREATE TABLE IF NOT EXISTS daily_logins (
   UNIQUE(user_id, login_date) -- Um login por dia
 );
 
+-- Tabela para controlar jogos diários de personagem aleatório
+CREATE TABLE IF NOT EXISTS daily_character_games (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  game_date DATE NOT NULL,
+  character_id INTEGER NOT NULL,
+  already_owned BOOLEAN NOT NULL DEFAULT FALSE,
+  coins_spent INTEGER DEFAULT 10,
+  bonus_coins INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, game_date) -- Um jogo por dia
+);
+
+-- Tabela para resultados do jogo da memória
+CREATE TABLE IF NOT EXISTS memory_game_results (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  character_id INTEGER NOT NULL,
+  correct_guess BOOLEAN NOT NULL,
+  coins_earned INTEGER NOT NULL DEFAULT 0,
+  game_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Inserir usuários de exemplo
-INSERT INTO users (name, email, password_hash, coins, total_coins_earned) VALUES
+INSERT INTO users (username, email, password_hash, coins, total_coins_earned) VALUES
 ('Alex', 'alexmind@gmail.com', '$2b$10$o3Lx9SXG2xPq7pYLzaUq/uVWxioqy4mI/Q9BWMxJRTwE6CJGbBvzy', 200, 200),
 ('Val', 'vanbanding@gmail.com','$2b$10$6E07uTkNqMJtfMwmkRE1EuAK38BFxCmihM7Tuf3MVuCJgiN8dMPOK', 150, 150),
 ('Mario', 'mariobros@gmail.com','$2b$10$3MQb43.Blm.Ypl2TviJMzu7O87J5Lk2QieT8fsGsrCOf4RXunu67G', 300, 300)
@@ -67,9 +98,12 @@ ON CONFLICT (email) DO NOTHING;
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_token ON user_sessions(session_token);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_unlocked_characters_user_id ON user_unlocked_characters(user_id);
+CREATE INDEX IF NOT EXISTS idx_unlocked_characters_user_id ON unlocked_characters(user_id);
 CREATE INDEX IF NOT EXISTS idx_coin_transactions_user_id ON coin_transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_daily_logins_user_date ON daily_logins(user_id, login_date);
+CREATE INDEX IF NOT EXISTS idx_daily_bonuses_user_date ON daily_bonuses(user_id, claimed_date);
+CREATE INDEX IF NOT EXISTS idx_daily_character_games_user_date ON daily_character_games(user_id, game_date);
+CREATE INDEX IF NOT EXISTS idx_memory_game_results_user_id ON memory_game_results(user_id);
 
 -- Função para atualizar updated_at automaticamente
 CREATE OR REPLACE FUNCTION update_updated_at_column()

@@ -1,22 +1,65 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/auth_models.dart';
 import '../models/user.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://localhost:3000/api';
+  // Detecta automaticamente a URL correta baseada na plataforma
+  static String get baseUrl {
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:3001/api'; // Emulador Android
+    } else if (Platform.isIOS) {
+      return 'http://localhost:3001/api'; // iOS Simulator
+    } else {
+      return 'http://localhost:3001/api'; // Web/Desktop
+    }
+  }
 
-  // Para dispositivo físico, use:
-  // static const String baseUrl = 'http://SEU_IP:3000/api';
+  // Método para testar conectividade
+  Future<bool> testConnection() async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse('${baseUrl.replaceAll('/api', '')}/health'),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 5));
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Connection test failed: $e');
+      return false;
+    }
+  }
 
   Future<AuthResponse> login(String email, String password) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
+      print('Attempting to login user: $email');
+      print('Using API URL: $baseUrl/auth/login');
+
+      // Test connection first
+      final canConnect = await testConnection();
+      if (!canConnect) {
+        print('Cannot connect to server');
+        return AuthResponse(
+          success: false,
+          error:
+              'Cannot connect to server. Make sure the backend is running on port 3001.',
+        );
+      }
+
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/auth/login'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'email': email, 'password': password}),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      print('Login response status: ${response.statusCode}');
+      print('Login response body: ${response.body}');
 
       final responseData = jsonDecode(response.body);
 
@@ -42,7 +85,20 @@ class AuthService {
         );
       }
     } catch (e) {
-      return AuthResponse(success: false, error: 'Network error: $e');
+      print('Login error: $e');
+      String errorMessage = 'Network error: ';
+
+      if (e.toString().contains('SocketException') ||
+          e.toString().contains('Connection refused')) {
+        errorMessage +=
+            'Cannot connect to server. Check if backend is running.';
+      } else if (e.toString().contains('TimeoutException')) {
+        errorMessage += 'Request timeout. Server might be slow.';
+      } else {
+        errorMessage += e.toString();
+      }
+
+      return AuthResponse(success: false, error: errorMessage);
     }
   }
 
@@ -52,27 +108,46 @@ class AuthService {
     String password,
   ) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'username': username,
-          'email': email,
-          'password': password,
-        }),
-      );
+      print('Attempting to register user: $username');
+      print('Using API URL: $baseUrl/auth/register');
+
+      // Test connection first
+      final canConnect = await testConnection();
+      if (!canConnect) {
+        print('Cannot connect to server');
+        return AuthResponse(
+          success: false,
+          error:
+              'Cannot connect to server. Make sure the backend is running on port 3001.',
+        );
+      }
+
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/auth/register'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'username': username,
+              'email': email,
+              'password': password,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      print('Registration response status: ${response.statusCode}');
+      print('Registration response body: ${response.body}');
 
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        // Salvar token se fornecido
+        // Salvar token se fornecido (pode ser null no registro)
         if (responseData['token'] != null) {
           await _saveToken(responseData['token']);
         }
 
         return AuthResponse(
           success: true,
-          token: responseData['token'],
+          token: responseData['token'], // Pode ser null
           user: responseData['user'] != null
               ? User.fromJson(responseData['user'])
               : null,
@@ -86,7 +161,20 @@ class AuthService {
         );
       }
     } catch (e) {
-      return AuthResponse(success: false, error: 'Network error: $e');
+      print('Registration error: $e');
+      String errorMessage = 'Network error: ';
+
+      if (e.toString().contains('SocketException') ||
+          e.toString().contains('Connection refused')) {
+        errorMessage +=
+            'Cannot connect to server. Check if backend is running.';
+      } else if (e.toString().contains('TimeoutException')) {
+        errorMessage += 'Request timeout. Server might be slow.';
+      } else {
+        errorMessage += e.toString();
+      }
+
+      return AuthResponse(success: false, error: errorMessage);
     }
   }
 

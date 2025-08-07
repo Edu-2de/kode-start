@@ -3,37 +3,39 @@ class User {
   final String name;
   final String email;
   final int coins;
-  final int totalCoinsEarned;
-  final DateTime createdAt;
+  final int? totalCoinsEarned; // Opcional
+  final DateTime? createdAt; // Opcional
 
   User({
     required this.id,
     required this.name,
     required this.email,
     required this.coins,
-    required this.totalCoinsEarned,
-    required this.createdAt,
+    this.totalCoinsEarned,
+    this.createdAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      name: json['name'],
+      name: json['username'] ?? json['name'], // Aceita ambos os campos
       email: json['email'],
       coins: json['coins'],
       totalCoinsEarned: json['total_coins_earned'],
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
+      'username': name, // Usar username para ser compatível com o backend
       'email': email,
       'coins': coins,
-      'total_coins_earned': totalCoinsEarned,
-      'created_at': createdAt.toIso8601String(),
+      if (totalCoinsEarned != null) 'total_coins_earned': totalCoinsEarned,
+      if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
     };
   }
 }
