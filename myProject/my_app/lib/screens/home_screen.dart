@@ -200,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
         return Scaffold(
           backgroundColor: style == AppStyle.modern
-              ? const Color(0xFF18181B)
+              ? const Color(0xFF0F0F0F) // Fundo mais escuro para área dos cards
               : const Color(0xFF1A1A1A),
           body: Stack(
             children: [
@@ -209,26 +209,46 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     _buildHeader(style),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        'RICK AND MORTY API',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: style == AppStyle.modern
-                              ? FontWeight.w400
-                              : FontWeight.w600,
-                          letterSpacing: 2,
-                        ),
+                      color: style == AppStyle.modern
+                          ? const Color(
+                              0xFF1F1F1F,
+                            ) // Header mais claro no modern
+                          : const Color(0xFF1A1A1A),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'RICK AND MORTY API',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: style == AppStyle.modern
+                                  ? FontWeight.w400
+                                  : FontWeight.w600,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 30),
                     Expanded(
-                      child: hasError
-                          ? _buildErrorWidget()
-                          : isLoading && characters.isEmpty
-                          ? _buildLoadingWidget()
-                          : _buildCharactersList(style),
+                      child: Container(
+                        color: style == AppStyle.modern
+                            ? const Color(
+                                0xFF0F0F0F,
+                              ) // Fundo escuro para os cards
+                            : const Color(0xFF1A1A1A),
+                        child: hasError
+                            ? _buildErrorWidget()
+                            : isLoading && characters.isEmpty
+                            ? _buildLoadingWidget()
+                            : _buildCharactersList(style),
+                      ),
                     ),
                   ],
                 ),
@@ -250,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildHeader(AppStyle style) {
     return Container(
       color: style == AppStyle.modern
-          ? const Color(0xFF18181B)
+          ? const Color(0xFF1F1F1F) // Header mais claro no modern
           : const Color(0xFF1A1A1A),
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
       child: Row(
@@ -270,8 +290,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           const Spacer(),
           Container(
-            width: style == AppStyle.modern ? 80 : 60, // Logo maior no modern
-            height: style == AppStyle.modern ? 55 : 40, // Logo maior no modern
+            width: style == AppStyle.modern ? 85 : 60, // Logo maior no modern
+            height: style == AppStyle.modern ? 60 : 40, // Logo maior no modern
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
             child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
           ),

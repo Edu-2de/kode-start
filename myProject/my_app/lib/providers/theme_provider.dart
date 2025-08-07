@@ -25,16 +25,18 @@ class ThemeProvider with ChangeNotifier {
   ThemeData _createModernTheme() => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: const Color(0xFF18181B),
+    scaffoldBackgroundColor: const Color(
+      0xFF0F0F0F,
+    ), // Fundo mais escuro para área dos cards
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF18181B),
+      backgroundColor: Color(0xFF1F1F1F), // Header um pouco mais claro
       elevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
     ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.blue,
       brightness: Brightness.dark,
-      surface: const Color(0xFF18181B),
+      surface: const Color(0xFF0F0F0F),
     ),
   );
 

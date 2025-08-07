@@ -13,12 +13,17 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
+        final style = themeProvider.currentStyle;
+        final drawerColor = style == AppStyle.modern
+            ? const Color(0xFF1F1F1F) // Cor do header no modern
+            : const Color(0xFF1A1A1A);
+
         return Container(
           width: MediaQuery.of(context).size.width * 0.75,
           height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            color: Color(0xFF1A1A1A),
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            color: drawerColor,
+            borderRadius: const BorderRadius.only(
               topRight: Radius.circular(20),
               bottomRight: Radius.circular(20),
             ),

@@ -19,8 +19,17 @@ class CharacterCardModern extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(0),
+          borderRadius: BorderRadius.circular(
+            16,
+          ), // Mais arredondado como na foto
           color: const Color(0xFF7D8EFF), // Cor azul igual às imagens
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         clipBehavior: Clip.hardEdge,
         child: Column(
@@ -48,7 +57,10 @@ class CharacterCardModern extends StatelessWidget {
             ),
             // Nome do personagem exatamente como nas imagens
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ), // Padding um pouco maior
               child: Text(
                 character.name.toUpperCase(),
                 style: const TextStyle(
