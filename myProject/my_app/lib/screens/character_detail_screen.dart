@@ -36,7 +36,9 @@ class CharacterDetailScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1C1B20), // Background igual ao header da home
+      backgroundColor: const Color(
+        0xFF1C1B20,
+      ), // Background igual ao header da home
       body: SafeArea(
         child: Column(
           children: [
@@ -58,8 +60,14 @@ class CharacterDetailScreen extends StatelessWidget {
                       child: Container(
                         width: 24,
                         height: 24,
-                        decoration: const BoxDecoration(color: Colors.transparent),
-                        child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
@@ -67,15 +75,23 @@ class CharacterDetailScreen extends StatelessWidget {
                   Container(
                     width: 120,
                     height: 72,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                    child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                   const Spacer(),
                   SizedBox(
                     width: 24,
                     height: 24,
                     child: ClipOval(
-                      child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
+                      child: Image.asset(
+                        'assets/images/icon.png',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ],
@@ -126,7 +142,8 @@ class CharacterDetailScreen extends StatelessWidget {
                       children: [
                         // Imagem do personagem
                         AspectRatio(
-                          aspectRatio: 1.7, // Proporção similar à foto fornecida
+                          aspectRatio:
+                              1.7, // Proporção similar à foto fornecida
                           child: CachedNetworkImage(
                             imageUrl: character.image,
                             fit: BoxFit.cover,
@@ -134,13 +151,19 @@ class CharacterDetailScreen extends StatelessWidget {
                               color: Colors.grey[300],
                               child: const Center(
                                 child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
                             errorWidget: (context, url, error) => Container(
                               color: Colors.grey[800],
-                              child: const Icon(Icons.error, color: Colors.white, size: 48),
+                              child: const Icon(
+                                Icons.error,
+                                color: Colors.white,
+                                size: 48,
+                              ),
                             ),
                           ),
                         ),
@@ -188,21 +211,32 @@ class CharacterDetailScreen extends StatelessWidget {
                               const SizedBox(height: 16),
 
                               // Gênero
-                              _buildModernDetailItem('Gender:', character.gender),
+                              _buildModernDetailItem(
+                                'Gender:',
+                                character.gender,
+                              ),
                               const SizedBox(height: 12),
 
                               // Origem
-                              _buildModernDetailItem('Origin:', character.origin.name),
+                              _buildModernDetailItem(
+                                'Origin:',
+                                character.origin.name,
+                              ),
                               const SizedBox(height: 12),
 
                               // Última localização conhecida
-                              _buildModernDetailItem('Last known location:', character.location.name),
+                              _buildModernDetailItem(
+                                'Last known location:',
+                                character.location.name,
+                              ),
                               const SizedBox(height: 12),
 
                               // Primeira aparição
                               _buildModernDetailItem(
                                 'First seen in:',
-                                character.episode.isNotEmpty ? 'Total Rickall' : 'Unknown',
+                                character.episode.isNotEmpty
+                                    ? 'Total Rickall'
+                                    : 'Unknown',
                               ),
                             ],
                           ),
@@ -257,8 +291,14 @@ class CharacterDetailScreen extends StatelessWidget {
                       child: Container(
                         width: 24,
                         height: 24,
-                        decoration: const BoxDecoration(color: Colors.transparent),
-                        child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
@@ -266,15 +306,23 @@ class CharacterDetailScreen extends StatelessWidget {
                   Container(
                     width: 60,
                     height: 40,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                    child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                   const Spacer(),
                   SizedBox(
                     width: 24,
                     height: 24,
                     child: ClipOval(
-                      child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
+                      child: Image.asset(
+                        'assets/images/icon.png',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ],
@@ -307,7 +355,10 @@ class CharacterDetailScreen extends StatelessWidget {
                       ],
                     ),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 1,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.4),
@@ -342,19 +393,28 @@ class CharacterDetailScreen extends StatelessWidget {
                                 placeholder: (context, url) => Container(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
-                                      colors: [Colors.grey[800]!, Colors.grey[700]!],
+                                      colors: [
+                                        Colors.grey[800]!,
+                                        Colors.grey[700]!,
+                                      ],
                                     ),
                                   ),
                                   child: const Center(
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.purple,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => Container(
                                   color: Colors.grey[800],
-                                  child: const Icon(Icons.error, color: Colors.white, size: 64),
+                                  child: const Icon(
+                                    Icons.error,
+                                    color: Colors.white,
+                                    size: 64,
+                                  ),
                                 ),
                               ),
                               Container(
@@ -362,7 +422,10 @@ class CharacterDetailScreen extends StatelessWidget {
                                   gradient: LinearGradient(
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
-                                    colors: [Colors.transparent, Colors.black.withOpacity(0.2)],
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.2),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -419,7 +482,10 @@ class CharacterDetailScreen extends StatelessWidget {
                             const SizedBox(height: 12),
                             _buildDetailItem('Origin:', character.origin.name),
                             const SizedBox(height: 12),
-                            _buildDetailItem('Last known location:', character.location.name),
+                            _buildDetailItem(
+                              'Last known location:',
+                              character.location.name,
+                            ),
                             const SizedBox(height: 12),
                             if (character.type.isNotEmpty)
                               Column(
@@ -431,10 +497,15 @@ class CharacterDetailScreen extends StatelessWidget {
                               ),
                             _buildDetailItem(
                               'First seen in:',
-                              character.episode.isNotEmpty ? 'Total Rickall' : 'Unknown',
+                              character.episode.isNotEmpty
+                                  ? 'Total Rickall'
+                                  : 'Unknown',
                             ),
                             const SizedBox(height: 12),
-                            _buildDetailItem('Episodes:', '${character.episode.length} episodes'),
+                            _buildDetailItem(
+                              'Episodes:',
+                              '${character.episode.length} episodes',
+                            ),
                           ],
                         ),
                       ),

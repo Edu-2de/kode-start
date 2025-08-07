@@ -17,9 +17,12 @@ class FilterScreen extends StatefulWidget {
 
 class _FilterScreenState extends State<FilterScreen>
     with TickerProviderStateMixin {
+  final ScrollController _scrollController = ScrollController();
+  List<Character> allCharacters = [];
   List<Character> filteredCharacters = [];
   bool isLoading = false;
-  bool hasFiltered = false;
+  bool hasMore = true;
+  int currentPage = 1;
   String? errorMessage;
   bool isDrawerOpen = false;
   bool isFilterCollapsed = false;
@@ -51,6 +54,8 @@ class _FilterScreenState extends State<FilterScreen>
   @override
   void initState() {
     super.initState();
+    _loadAllCharacters();
+    _scrollController.addListener(_onScroll);
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -68,8 +73,92 @@ class _FilterScreenState extends State<FilterScreen>
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (hasMore && !isLoading) {
+        _loadMore();
+      }
+    }
+  }
+
+  Future<void> _loadAllCharacters() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final response = await RickAndMortyService.getCharacters(page: 1);
+      setState(() {
+        allCharacters = response.results;
+        filteredCharacters = response.results;
+        currentPage = 1;
+        hasMore = response.info.next != null;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Error loading characters';
+      });
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (!hasMore || isLoading) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await RickAndMortyService.getCharacters(
+        page: currentPage + 1,
+      );
+      setState(() {
+        allCharacters.addAll(response.results);
+        currentPage++;
+        hasMore = response.info.next != null;
+        isLoading = false;
+        _applyFiltersToAllCharacters();
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void _applyFiltersToAllCharacters() {
+    List<Character> filtered = allCharacters.where((character) {
+      bool matchesStatus =
+          selectedStatus == null ||
+          character.status.toLowerCase() == selectedStatus!.toLowerCase();
+
+      bool matchesGender =
+          selectedGender == null ||
+          character.gender.toLowerCase() == selectedGender!.toLowerCase();
+
+      bool matchesSpecies =
+          selectedSpecies == null ||
+          character.species.toLowerCase() == selectedSpecies!.toLowerCase();
+
+      return matchesStatus && matchesGender && matchesSpecies;
+    }).toList();
+
+    setState(() {
+      filteredCharacters = filtered;
+    });
+  }
+
+  void _onFilterChanged() {
+    _applyFiltersToAllCharacters();
   }
 
   void _toggleDrawer() {
@@ -90,63 +179,13 @@ class _FilterScreenState extends State<FilterScreen>
     });
   }
 
-  Future<void> _applyFilters() async {
-    setState(() {
-      isLoading = true;
-      errorMessage = null;
-      hasFiltered = true;
-    });
-
-    try {
-      List<Character> allCharacters = [];
-      int page = 1;
-      bool hasMore = true;
-
-      while (hasMore && page <= 5) {
-        final response = await RickAndMortyService.getCharacters(page: page);
-        allCharacters.addAll(response.results);
-        hasMore = response.info.next != null;
-        page++;
-      }
-
-      List<Character> filtered = allCharacters.where((character) {
-        bool matchesStatus =
-            selectedStatus == null ||
-            character.status.toLowerCase() == selectedStatus!.toLowerCase();
-
-        bool matchesGender =
-            selectedGender == null ||
-            character.gender.toLowerCase() == selectedGender!.toLowerCase();
-
-        bool matchesSpecies =
-            selectedSpecies == null ||
-            character.species.toLowerCase() == selectedSpecies!.toLowerCase();
-
-        return matchesStatus && matchesGender && matchesSpecies;
-      }).toList();
-
-      setState(() {
-        filteredCharacters = filtered;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        filteredCharacters = [];
-        isLoading = false;
-        errorMessage = 'Error loading characters';
-      });
-    }
-  }
-
   void _clearFilters() {
     setState(() {
       selectedStatus = null;
       selectedGender = null;
       selectedSpecies = null;
-      filteredCharacters = [];
-      hasFiltered = false;
-      errorMessage = null;
     });
+    _applyFiltersToAllCharacters();
   }
 
   @override
@@ -185,8 +224,14 @@ class _FilterScreenState extends State<FilterScreen>
                               child: Container(
                                 width: 24,
                                 height: 24,
-                                decoration: const BoxDecoration(color: Colors.transparent),
-                                child: const Icon(Icons.menu, color: Colors.white, size: 24),
+                                decoration: const BoxDecoration(
+                                  color: Colors.transparent,
+                                ),
+                                child: const Icon(
+                                  Icons.menu,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
                               ),
                             ),
                           ),
@@ -194,15 +239,23 @@ class _FilterScreenState extends State<FilterScreen>
                           Container(
                             width: style == AppStyle.modern ? 120 : 60,
                             height: style == AppStyle.modern ? 72 : 40,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                            child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              fit: BoxFit.contain,
+                            ),
                           ),
                           const Spacer(),
                           SizedBox(
                             width: 24,
                             height: 24,
                             child: ClipOval(
-                              child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
+                              child: Image.asset(
+                                'assets/images/icon.png',
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ],
@@ -250,7 +303,9 @@ class _FilterScreenState extends State<FilterScreen>
                           children: [
                             // Filter controls
                             Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 20),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 color: style == AppStyle.modern
@@ -258,14 +313,18 @@ class _FilterScreenState extends State<FilterScreen>
                                     : const Color(0xFF2D2D30),
                                 borderRadius: BorderRadius.circular(12),
                                 border: style == AppStyle.classic
-                                    ? Border.all(color: Colors.white.withOpacity(0.1), width: 1)
+                                    ? Border.all(
+                                        color: Colors.white.withOpacity(0.1),
+                                        width: 1,
+                                      )
                                     : null,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text(
                                         'Filters',
@@ -279,7 +338,9 @@ class _FilterScreenState extends State<FilterScreen>
                                         color: Colors.transparent,
                                         child: InkWell(
                                           onTap: _toggleFilterCollapse,
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                           child: Container(
                                             padding: const EdgeInsets.all(4),
                                             child: Icon(
@@ -302,7 +363,10 @@ class _FilterScreenState extends State<FilterScreen>
                                       label: 'Status',
                                       value: selectedStatus,
                                       items: statusOptions,
-                                      onChanged: (value) => setState(() => selectedStatus = value),
+                                      onChanged: (value) {
+                                        setState(() => selectedStatus = value);
+                                        _onFilterChanged();
+                                      },
                                       style: style,
                                     ),
 
@@ -312,7 +376,10 @@ class _FilterScreenState extends State<FilterScreen>
                                       label: 'Gender',
                                       value: selectedGender,
                                       items: genderOptions,
-                                      onChanged: (value) => setState(() => selectedGender = value),
+                                      onChanged: (value) {
+                                        setState(() => selectedGender = value);
+                                        _onFilterChanged();
+                                      },
                                       style: style,
                                     ),
 
@@ -322,12 +389,16 @@ class _FilterScreenState extends State<FilterScreen>
                                       label: 'Species',
                                       value: selectedSpecies,
                                       items: speciesOptions,
-                                      onChanged: (value) => setState(() => selectedSpecies = value),
+                                      onChanged: (value) {
+                                        setState(() => selectedSpecies = value);
+                                        _onFilterChanged();
+                                      },
                                       style: style,
                                     ),
 
                                     const SizedBox(height: 24),
 
+                                    // Apenas botão Clear
                                     Row(
                                       children: [
                                         Expanded(
@@ -335,33 +406,20 @@ class _FilterScreenState extends State<FilterScreen>
                                             onPressed: _clearFilters,
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.grey[700],
-                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                  ),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                               ),
                                             ),
                                             child: const Text(
-                                              'Clear',
-                                              style: TextStyle(color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: ElevatedButton(
-                                            onPressed: _applyFilters,
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: style == AppStyle.modern
-                                                  ? Colors.blue
-                                                  : Colors.purple,
-                                              padding: const EdgeInsets.symmetric(vertical: 12),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
+                                              'Clear All Filters',
+                                              style: TextStyle(
+                                                color: Colors.white,
                                               ),
-                                            ),
-                                            child: const Text(
-                                              'Apply',
-                                              style: TextStyle(color: Colors.white),
                                             ),
                                           ),
                                         ),
@@ -458,7 +516,7 @@ class _FilterScreenState extends State<FilterScreen>
   }
 
   Widget _buildResults(AppStyle style) {
-    if (isLoading) {
+    if (isLoading && filteredCharacters.isEmpty) {
       return Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(
@@ -482,32 +540,8 @@ class _FilterScreenState extends State<FilterScreen>
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _applyFilters,
+              onPressed: _loadAllCharacters,
               child: const Text('Try Again'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (!hasFiltered) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.filter_list,
-              size: 64,
-              color: style == AppStyle.modern ? Colors.grey[600] : Colors.grey,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Select filters and tap Apply to see results',
-              style: TextStyle(
-                color: style == AppStyle.modern ? Colors.grey[400] : Colors.grey,
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -528,7 +562,9 @@ class _FilterScreenState extends State<FilterScreen>
             Text(
               'No characters found with the selected filters',
               style: TextStyle(
-                color: style == AppStyle.modern ? Colors.grey[400] : Colors.grey,
+                color: style == AppStyle.modern
+                    ? Colors.grey[400]
+                    : Colors.grey,
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,
@@ -538,39 +574,88 @@ class _FilterScreenState extends State<FilterScreen>
       );
     }
 
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
-        mainAxisSpacing: style == AppStyle.modern ? 12 : 8,
-        childAspectRatio: style == AppStyle.modern ? 1.8 : 4.0,
-      ),
-      itemCount: filteredCharacters.length,
-      itemBuilder: (context, index) {
-        final character = filteredCharacters[index];
+    return Column(
+      children: [
+        // Loading indicator para carregamento de mais personagens
+        if (isLoading && filteredCharacters.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      style == AppStyle.modern ? Colors.blue : Colors.purple,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Loading more characters...',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                ),
+              ],
+            ),
+          ),
 
-        if (style == AppStyle.modern) {
-          return CharacterCardModern(
-            character: character,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CharacterDetailScreen(character: character),
-              ),
+        Expanded(
+          child: GridView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              mainAxisSpacing: style == AppStyle.modern ? 12 : 8,
+              childAspectRatio: style == AppStyle.modern ? 1.8 : 4.0,
             ),
-          );
-        } else {
-          return CharacterCardClassic(
-            character: character,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CharacterDetailScreen(character: character),
-              ),
-            ),
-          );
-        }
-      },
+            itemCount:
+                filteredCharacters.length + (hasMore && !isLoading ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index >= filteredCharacters.length) {
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        style == AppStyle.modern ? Colors.blue : Colors.purple,
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              final character = filteredCharacters[index];
+
+              if (style == AppStyle.modern) {
+                return CharacterCardModern(
+                  character: character,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CharacterDetailScreen(character: character),
+                    ),
+                  ),
+                );
+              } else {
+                return CharacterCardClassic(
+                  character: character,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CharacterDetailScreen(character: character),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }

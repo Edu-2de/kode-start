@@ -6,6 +6,7 @@ import 'character_detail_screen.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/character_card_modern.dart';
 import '../widgets/character_card_classic.dart';
+import '../widgets/profile_menu.dart';
 import '../providers/theme_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -301,13 +302,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
           ),
           const Spacer(),
-          SizedBox(
-            width: 24,
-            height: 24,
-            child: ClipOval(
-              child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
-            ),
-          ),
+          const ProfileMenu(),
         ],
       ),
     );

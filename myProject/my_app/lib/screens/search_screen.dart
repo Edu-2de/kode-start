@@ -110,7 +110,10 @@ class _SearchScreenState extends State<SearchScreen>
     }
   }
 
-  Future<void> _searchCharacters(String query, {required bool isNewSearch}) async {
+  Future<void> _searchCharacters(
+    String query, {
+    required bool isNewSearch,
+  }) async {
     if (query.trim().isEmpty) return;
 
     setState(() {
@@ -125,10 +128,10 @@ class _SearchScreenState extends State<SearchScreen>
 
     try {
       final response = await RickAndMortyService.searchCharacters(
-        query.trim(), 
+        query.trim(),
         page: isNewSearch ? 1 : currentPage + 1,
       );
-      
+
       setState(() {
         if (isNewSearch) {
           searchResults = response.results;
@@ -188,8 +191,14 @@ class _SearchScreenState extends State<SearchScreen>
                               child: Container(
                                 width: 24,
                                 height: 24,
-                                decoration: const BoxDecoration(color: Colors.transparent),
-                                child: const Icon(Icons.menu, color: Colors.white, size: 24),
+                                decoration: const BoxDecoration(
+                                  color: Colors.transparent,
+                                ),
+                                child: const Icon(
+                                  Icons.menu,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
                               ),
                             ),
                           ),
@@ -197,15 +206,23 @@ class _SearchScreenState extends State<SearchScreen>
                           Container(
                             width: style == AppStyle.modern ? 120 : 60,
                             height: style == AppStyle.modern ? 72 : 40,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                            child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              fit: BoxFit.contain,
+                            ),
                           ),
                           const Spacer(),
                           SizedBox(
                             width: 24,
                             height: 24,
                             child: ClipOval(
-                              child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
+                              child: Image.asset(
+                                'assets/images/icon.png',
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ],
@@ -250,7 +267,10 @@ class _SearchScreenState extends State<SearchScreen>
                             : const Color(0xFF2D2D30),
                         borderRadius: BorderRadius.circular(12),
                         border: style == AppStyle.classic
-                            ? Border.all(color: Colors.white.withOpacity(0.1), width: 1)
+                            ? Border.all(
+                                color: Colors.white.withOpacity(0.1),
+                                width: 1,
+                              )
                             : null,
                       ),
                       child: TextField(
@@ -259,7 +279,10 @@ class _SearchScreenState extends State<SearchScreen>
                         decoration: InputDecoration(
                           hintText: 'Type to search characters...',
                           hintStyle: TextStyle(color: Colors.grey[400]),
-                          prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Colors.grey,
+                          ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.all(16),
                         ),
@@ -304,7 +327,9 @@ class _SearchScreenState extends State<SearchScreen>
             Text(
               'Type a character name to search',
               style: TextStyle(
-                color: style == AppStyle.modern ? Colors.grey[400] : Colors.grey,
+                color: style == AppStyle.modern
+                    ? Colors.grey[400]
+                    : Colors.grey,
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,
@@ -338,7 +363,9 @@ class _SearchScreenState extends State<SearchScreen>
             Text(
               errorMessage!,
               style: TextStyle(
-                color: style == AppStyle.modern ? Colors.grey[400] : Colors.grey,
+                color: style == AppStyle.modern
+                    ? Colors.grey[400]
+                    : Colors.grey,
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,
@@ -382,7 +409,8 @@ class _SearchScreenState extends State<SearchScreen>
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CharacterDetailScreen(character: character),
+                      builder: (context) =>
+                          CharacterDetailScreen(character: character),
                     ),
                   ),
                 );
@@ -392,7 +420,8 @@ class _SearchScreenState extends State<SearchScreen>
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CharacterDetailScreen(character: character),
+                      builder: (context) =>
+                          CharacterDetailScreen(character: character),
                     ),
                   ),
                 );
