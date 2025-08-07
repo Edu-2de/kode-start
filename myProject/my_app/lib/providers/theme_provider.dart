@@ -6,7 +6,6 @@ enum AppStyle { modern, classic }
 class ThemeProvider with ChangeNotifier {
   AppStyle _currentStyle = AppStyle.modern;
 
-  // Cache dos temas para evitar recriação
   late ThemeData _modernTheme;
   late ThemeData _classicTheme;
 
@@ -21,15 +20,12 @@ class ThemeProvider with ChangeNotifier {
 
   AppStyle get currentStyle => _currentStyle;
 
-  // Métodos privados para criar os temas
   ThemeData _createModernTheme() => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: const Color(
-      0xFF0F0F0F,
-    ), // Fundo mais escuro para área dos cards
+    scaffoldBackgroundColor: const Color(0xFF0F0F0F),
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF1F1F1F), // Header um pouco mais claro
+      backgroundColor: Color(0xFF1F1F1F),
       elevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
     ),
@@ -56,11 +52,9 @@ class ThemeProvider with ChangeNotifier {
     ),
   );
 
-  // Getters que retornam os temas em cache
   ThemeData get modernTheme => _modernTheme;
   ThemeData get classicTheme => _classicTheme;
 
-  // Retorna o tema atual baseado no estilo
   ThemeData get currentTheme {
     return _currentStyle == AppStyle.modern ? _modernTheme : _classicTheme;
   }

@@ -17,12 +17,9 @@ class CharacterCardModern extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-            16,
-          ), // Mais arredondado como na foto
-          color: const Color(0xFF7D8EFF), // Cor azul igual às imagens
+          borderRadius: BorderRadius.circular(16),
+          color: const Color(0xFF7D8EFF), // Blue color matching the images
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -35,9 +32,9 @@ class CharacterCardModern extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Imagem do personagem com aspect ratio das fotos
-            AspectRatio(
-              aspectRatio: 2.2,
+            // Imagem do personagem
+            Expanded(
+              flex: 3,
               child: CachedNetworkImage(
                 imageUrl: character.image,
                 fit: BoxFit.cover,
@@ -55,21 +52,20 @@ class CharacterCardModern extends StatelessWidget {
                 ),
               ),
             ),
-            // Nome do personagem exatamente como nas imagens
+            // Nome do personagem embaixo
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 14,
-              ), // Padding um pouco maior
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Text(
                 character.name.toUpperCase(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
-                  fontSize: 16,
+                  fontSize: 14,
                   letterSpacing: 1,
                 ),
                 textAlign: TextAlign.left,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

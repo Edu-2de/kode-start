@@ -17,12 +17,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<Character> characters = [];
-  List<Character> allCharacters = []; // Lista completa de todos os personagens
+  List<Character> allCharacters = [];
   bool isLoading = true;
   bool hasError = false;
   int currentPage = 1;
   bool hasMore = true;
-  bool isThemeChanging = false; // Flag para indicar que o tema está mudando
+  bool isThemeChanging = false; // Flag to indicate theme is changing
   final ScrollController _scrollController = ScrollController();
   bool isDrawerOpen = false;
   late AnimationController _animationController;
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         );
 
-    // Escutar mudanças de tema
+    // Listen for theme changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         Provider.of<ThemeProvider>(
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _scrollController.dispose();
     _animationController.dispose();
 
-    // Remover listener de tema
+    // Remove theme listener
     if (mounted) {
       try {
         Provider.of<ThemeProvider>(
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           listen: false,
         ).removeListener(_onThemeChanged);
       } catch (e) {
-        // Ignorar erro se o provider já foi removido
+        // Ignore error if provider was already removed
       }
     }
 
@@ -83,13 +83,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     setState(() {
       isThemeChanging = true;
-      // Durante mudança de tema, mostrar apenas os primeiros 5 personagens
+      // During theme change, show only first 5 characters
       if (allCharacters.isNotEmpty) {
         characters = allCharacters.take(5).toList();
       }
     });
 
-    // Após um pequeno delay, restaurar todos os personagens gradualmente
+    // After a small delay, restore all characters gradually
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
         _restoreAllCharactersGradually();
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       isThemeChanging = false;
     });
 
-    // Restaurar personagens em lotes de 5, com delay entre cada lote
+    // Restore characters in batches of 5, with delay between each batch
     for (int i = 5; i < allCharacters.length; i += 5) {
       await Future.delayed(const Duration(milliseconds: 50));
       if (!mounted) break;
@@ -145,9 +145,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
       final response = await RickAndMortyService.getCharacters(page: 1);
       setState(() {
-        // Armazenar todos os personagens
+        // Store all characters
         allCharacters = response.results;
-        // Mostrar todos inicialmente (só limitará durante mudança de tema)
+        // Show all initially (will only limit during theme change)
         characters = response.results;
         currentPage = 1;
         hasMore = response.info.next != null;
@@ -173,10 +173,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         page: currentPage + 1,
       );
       setState(() {
-        // Adicionar novos personagens à lista completa
+        // Add new characters to complete list
         allCharacters.addAll(response.results);
 
-        // Se não estamos mudando tema, mostrar todos
+        // If not changing theme, show all
         if (!isThemeChanging) {
           characters.addAll(response.results);
         }
@@ -200,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
         return Scaffold(
           backgroundColor: style == AppStyle.modern
-              ? const Color(0xFF0F0F0F) // Fundo mais escuro para área dos cards
+              ? const Color(0xFF0F0F0F) // Darker background for card area
               : const Color(0xFF1A1A1A),
           body: Stack(
             children: [
@@ -210,13 +210,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _buildHeader(style),
                     Container(
                       color: style == AppStyle.modern
-                          ? const Color(
-                              0xFF1F1F1F,
-                            ) // Header mais claro no modern
+                          ? const Color(0xFF1C1B20)
                           : const Color(0xFF1A1A1A),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
+                      padding: EdgeInsets.fromLTRB(
+                        20,
+                        style == AppStyle.modern ? 2 : 10,
+                        20,
+                        style == AppStyle.modern ? 16 : 10,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -235,13 +235,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 10),
                     Expanded(
                       child: Container(
                         color: style == AppStyle.modern
                             ? const Color(
                                 0xFF0F0F0F,
-                              ) // Fundo escuro para os cards
+                              ) // Darker background for cards
                             : const Color(0xFF1A1A1A),
                         child: hasError
                             ? _buildErrorWidget()
@@ -270,9 +270,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildHeader(AppStyle style) {
     return Container(
       color: style == AppStyle.modern
-          ? const Color(0xFF1F1F1F) // Header mais claro no modern
+          ? const Color(0xFF1C1B20)
           : const Color(0xFF1A1A1A),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        style == AppStyle.modern ? 4 : 20,
+        20,
+        style == AppStyle.modern ? 4 : 10,
+      ),
       child: Row(
         children: [
           Material(
@@ -290,20 +295,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           const Spacer(),
           Container(
-            width: style == AppStyle.modern ? 85 : 60, // Logo maior no modern
-            height: style == AppStyle.modern ? 60 : 40, // Logo maior no modern
+            width: style == AppStyle.modern ? 120 : 60,
+            height: style == AppStyle.modern ? 72 : 40,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
             child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
           ),
           const Spacer(),
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: Colors.grey[600],
-              shape: BoxShape.circle,
+          SizedBox(
+            width: 24,
+            height: 24,
+            child: ClipOval(
+              child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
             ),
-            child: const Icon(Icons.person, color: Colors.white, size: 20),
           ),
         ],
       ),
@@ -351,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     return Column(
       children: [
-        // Indicador de mudança de tema
+        // Theme change indicator
         if (isThemeChanging)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -370,25 +373,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Aplicando tema...',
+                  'Applying theme...',
                   style: TextStyle(color: Colors.grey[400], fontSize: 12),
                 ),
               ],
             ),
           ),
 
-        // Lista de personagens
+        // Character list
         Expanded(
-          child: ListView.builder(
+          child: GridView.builder(
             controller: _scrollController,
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              mainAxisSpacing: style == AppStyle.modern ? 12 : 8,
+              childAspectRatio: style == AppStyle.modern ? 1.8 : 4.0,
+            ),
             itemCount:
                 characters.length + (hasMore && !isThemeChanging ? 1 : 0),
             itemBuilder: (context, index) {
               if (index >= characters.length) {
-                return const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Center(
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                     ),

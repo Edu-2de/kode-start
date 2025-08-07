@@ -83,7 +83,7 @@ class CustomDrawer extends StatelessWidget {
                         title: 'Home',
                         subtitle: 'All characters',
                         onTap: () {
-                          // Fechar drawer usando callback se disponível
+                          // Close drawer using callback if available
                           if (onClose != null) {
                             onClose!();
                           } else {
@@ -102,7 +102,7 @@ class CustomDrawer extends StatelessWidget {
                         title: 'Search',
                         subtitle: 'Find characters',
                         onTap: () {
-                          // Fechar drawer usando callback se disponível
+                          // Close drawer using callback if available
                           if (onClose != null) {
                             onClose!();
                           } else {
@@ -122,7 +122,7 @@ class CustomDrawer extends StatelessWidget {
                         title: 'Filters',
                         subtitle: 'Filter by category',
                         onTap: () {
-                          // Fechar drawer usando callback se disponível
+                          // Close drawer using callback if available
                           if (onClose != null) {
                             onClose!();
                           } else {
@@ -136,7 +136,7 @@ class CustomDrawer extends StatelessWidget {
                           );
                         },
                       ),
-                      // Style/theme selector - Versão super simplificada
+                      // Style/theme selector - Super simplified version
                       _buildMenuItem(
                         context,
                         icon: Icons.palette,
@@ -145,10 +145,10 @@ class CustomDrawer extends StatelessWidget {
                             ? 'Switch to Classic'
                             : 'Switch to Modern',
                         onTap: () {
-                          // Fazer a mudança de tema
+                          // Make theme change
                           themeProvider.toggleStyle();
 
-                          // Fechar o drawer usando o callback do HomeScreen
+                          // Close drawer using HomeScreen callback
                           if (onClose != null) {
                             onClose!();
                           }
@@ -187,7 +187,7 @@ class CustomDrawer extends StatelessWidget {
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    // Cor especial para o ícone de palette
+    // Special color for palette icon
     final iconColor = icon == Icons.palette ? Colors.purple : Colors.blue;
 
     return Container(

@@ -26,23 +26,24 @@ class CharacterDetailScreen extends StatelessWidget {
     Color statusColor;
     switch (character.status.toLowerCase()) {
       case 'alive':
-        statusColor = Colors.green;
+        statusColor = const Color(0xFF4CAF50);
         break;
       case 'dead':
-        statusColor = Colors.red;
+        statusColor = const Color(0xFFE53935);
         break;
       default:
-        statusColor = Colors.grey;
+        statusColor = const Color(0xFFFF9800);
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF18181B),
+      backgroundColor: const Color(0xFF1C1B20), // Background igual ao header da home
       body: SafeArea(
         child: Column(
           children: [
+            // Header igual à home
             Container(
-              color: const Color(0xFF18181B),
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              color: const Color(0xFF1C1B20), // Cor igual ao header da home
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
               child: Row(
                 children: [
                   Material(
@@ -53,192 +54,165 @@ class CharacterDetailScreen extends StatelessWidget {
                           Navigator.pop(context);
                         }
                       },
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(4),
                       child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.grey[700]!,
-                            width: 1,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 18,
-                        ),
+                        width: 24,
+                        height: 24,
+                        decoration: const BoxDecoration(color: Colors.transparent),
+                        child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
                       ),
                     ),
                   ),
                   const Spacer(),
                   Container(
-                    width: 60,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      fit: BoxFit.contain,
-                    ),
+                    width: 120,
+                    height: 72,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                    child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
                   ),
                   const Spacer(),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {},
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.grey[700]!,
-                            width: 1,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: ClipOval(
+                      child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
                     ),
                   ),
                 ],
               ),
             ),
-            const Divider(color: Color(0xFF7D8EFF), thickness: 2, height: 0),
+            // Title
             Container(
-              color: const Color(0xFF18181B),
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              width: double.infinity,
-              child: const Center(
-                child: Text(
-                  'RICK AND MORTY API',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 2,
+              color: const Color(0xFF1C1B20),
+              padding: const EdgeInsets.fromLTRB(20, 2, 20, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'RICK AND MORTY API',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 2,
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
+
+            // Card do personagem estilo foto fornecida
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 0,
-                ),
-                child: Container(
-                  margin: const EdgeInsets.only(top: 0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF7D8EFF),
-                    borderRadius: BorderRadius.circular(0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      AspectRatio(
-                        aspectRatio: 2.2,
-                        child: ClipRect(
+              child: Container(
+                color: const Color(0xFF0F0F0F), // Fundo escuro para contraste
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 10, bottom: 30),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF7D8EFF), // Cor azul dos cards
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    clipBehavior: Clip.hardEdge,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Imagem do personagem
+                        AspectRatio(
+                          aspectRatio: 1.7, // Proporção similar à foto fornecida
                           child: CachedNetworkImage(
                             imageUrl: character.image,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                Container(color: Colors.grey[300]),
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[300],
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              ),
+                            ),
                             errorWidget: (context, url, error) => Container(
                               color: Colors.grey[800],
-                              child: const Icon(
-                                Icons.error,
-                                color: Colors.white,
-                              ),
+                              child: const Icon(Icons.error, color: Colors.white, size: 48),
                             ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              character.name.toUpperCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: statusColor,
-                                    shape: BoxShape.circle,
-                                  ),
+
+                        // Informações do personagem
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Nome
+                              Text(
+                                character.name.toUpperCase(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.0,
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '${character.status} - ${character.species}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Status com espécie
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                      color: statusColor,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'Last known location:',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 13,
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${character.status} - ${character.species}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Text(
-                              character.location.name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
+                              const SizedBox(height: 16),
+
+                              // Gênero
+                              _buildModernDetailItem('Gender:', character.gender),
+                              const SizedBox(height: 12),
+
+                              // Origem
+                              _buildModernDetailItem('Origin:', character.origin.name),
+                              const SizedBox(height: 12),
+
+                              // Última localização conhecida
+                              _buildModernDetailItem('Last known location:', character.location.name),
+                              const SizedBox(height: 12),
+
+                              // Primeira aparição
+                              _buildModernDetailItem(
+                                'First seen in:',
+                                character.episode.isNotEmpty ? 'Total Rickall' : 'Unknown',
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'First seen in:',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 13,
-                              ),
-                            ),
-                            Text(
-                              character.episode.isNotEmpty
-                                  ? character.episode.first
-                                  : '',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -249,13 +223,13 @@ class CharacterDetailScreen extends StatelessWidget {
     Color statusColor;
     switch (character.status.toLowerCase()) {
       case 'alive':
-        statusColor = Colors.green;
+        statusColor = const Color(0xFF4CAF50);
         break;
       case 'dead':
-        statusColor = Colors.red;
+        statusColor = const Color(0xFFE53935);
         break;
       default:
-        statusColor = Colors.grey;
+        statusColor = const Color(0xFFFF9800);
     }
 
     return Scaffold(
@@ -279,23 +253,12 @@ class CharacterDetailScreen extends StatelessWidget {
                           Navigator.pop(context);
                         }
                       },
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(4),
                       child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.grey[700]!,
-                            width: 1,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 18,
-                        ),
+                        width: 24,
+                        height: 24,
+                        decoration: const BoxDecoration(color: Colors.transparent),
+                        child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
                       ),
                     ),
                   ),
@@ -303,44 +266,22 @@ class CharacterDetailScreen extends StatelessWidget {
                   Container(
                     width: 60,
                     height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      fit: BoxFit.contain,
-                    ),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                    child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
                   ),
                   const Spacer(),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {},
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.grey[700]!,
-                            width: 1,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: ClipOval(
+                      child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
                     ),
                   ),
                 ],
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: const Text(
                 'RICK AND MORTY API',
                 style: TextStyle(
@@ -351,19 +292,27 @@ class CharacterDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4A90E2),
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF2D2D30),
+                        const Color(0xFF252529),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
@@ -374,43 +323,56 @@ class CharacterDetailScreen extends StatelessWidget {
                         height: 300,
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
                           ),
                         ),
                         child: ClipRRect(
                           borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
                           ),
-                          child: CachedNetworkImage(
-                            imageUrl: character.image,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: Colors.grey[800],
-                              child: const Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
+                          child: Stack(
+                            children: [
+                              CachedNetworkImage(
+                                imageUrl: character.image,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                                placeholder: (context, url) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.grey[800]!, Colors.grey[700]!],
+                                    ),
+                                  ),
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  color: Colors.grey[800],
+                                  child: const Icon(Icons.error, color: Colors.white, size: 64),
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [Colors.transparent, Colors.black.withOpacity(0.2)],
                                   ),
                                 ),
                               ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: Colors.grey[800],
-                              child: const Icon(
-                                Icons.error,
-                                color: Colors.white,
-                                size: 64,
-                              ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -418,55 +380,61 @@ class CharacterDetailScreen extends StatelessWidget {
                               character.name.toUpperCase(),
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.0,
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             Row(
                               children: [
                                 Container(
-                                  width: 12,
-                                  height: 12,
+                                  width: 8,
+                                  height: 8,
                                   decoration: BoxDecoration(
                                     color: statusColor,
                                     shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: statusColor.withOpacity(0.4),
+                                        blurRadius: 3,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: 8),
                                 Text(
                                   '${character.status} - ${character.species}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
+                                  style: TextStyle(
+                                    color: Colors.grey[300],
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                             _buildDetailItem('Gender:', character.gender),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             _buildDetailItem('Origin:', character.origin.name),
-                            const SizedBox(height: 16),
-                            _buildDetailItem(
-                              'Last known location:',
-                              character.location.name,
-                            ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
+                            _buildDetailItem('Last known location:', character.location.name),
+                            const SizedBox(height: 12),
                             if (character.type.isNotEmpty)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   _buildDetailItem('Type:', character.type),
-                                  const SizedBox(height: 16),
+                                  const SizedBox(height: 12),
                                 ],
                               ),
                             _buildDetailItem(
-                              'Episodes:',
-                              '${character.episode.length} episodes',
+                              'First seen in:',
+                              character.episode.isNotEmpty ? 'Total Rickall' : 'Unknown',
                             ),
+                            const SizedBox(height: 12),
+                            _buildDetailItem('Episodes:', '${character.episode.length} episodes'),
                           ],
                         ),
                       ),
@@ -482,15 +450,15 @@ class CharacterDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem(String label, String value) {
+  Widget _buildModernDetailItem(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: 14,
+            color: Colors.white.withOpacity(0.8),
+            fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -499,8 +467,33 @@ class CharacterDetailScreen extends StatelessWidget {
           value,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.purple[300],
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            color: Colors.grey[200],
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
