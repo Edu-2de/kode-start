@@ -6,6 +6,7 @@ import 'character_detail_screen.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/character_card_modern.dart';
 import '../widgets/character_card_classic.dart';
+import '../widgets/profile_menu_new.dart';
 import '../providers/theme_provider.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -215,16 +216,8 @@ class _SearchScreenState extends State<SearchScreen>
                             ),
                           ),
                           const Spacer(),
-                          SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: ClipOval(
-                              child: Image.asset(
-                                'assets/images/icon.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
+                          // Profile Menu
+                          const ProfileMenu(),
                         ],
                       ),
                     ),

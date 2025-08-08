@@ -281,101 +281,107 @@ class _GamesScreenState extends State<GamesScreen> {
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title
-            Text(
-              'Choose Your Game',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title
+              Text(
+                'Choose Your Game',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Play games to unlock new characters and earn coins!',
-              style: TextStyle(color: Colors.grey[400], fontSize: 14),
-            ),
-            SizedBox(height: 30),
+              SizedBox(height: 10),
+              Text(
+                'Play games to unlock new characters and earn coins!',
+                style: TextStyle(color: Colors.grey[400], fontSize: 14),
+              ),
+              SizedBox(height: 30),
 
-            // Random Character Game Card
-            _buildGameCard(
-              title: 'RANDOM CHARACTER',
-              subtitle: 'Get a random character',
-              description:
-                  'Unlock a random Rick & Morty character. Only once per day!',
-              cost: '10 COINS',
-              icon: Icons.shuffle,
-              color: Colors.green,
-              canPlay: _canPlayRandomGame,
-              timeRemaining: _canPlayRandomGame ? null : _formatTimeRemaining(),
-              onTap: _canPlayRandomGame && !_isLoading
-                  ? _playRandomCharacterGame
-                  : null,
-            ),
+              // Random Character Game Card
+              _buildGameCard(
+                title: 'RANDOM CHARACTER',
+                subtitle: 'Get a random character',
+                description:
+                    'Unlock a random Rick & Morty character. Only once per day!',
+                cost: '10 COINS',
+                icon: Icons.shuffle,
+                color: Colors.green,
+                canPlay: _canPlayRandomGame,
+                timeRemaining: _canPlayRandomGame
+                    ? null
+                    : _formatTimeRemaining(),
+                onTap: _canPlayRandomGame && !_isLoading
+                    ? _playRandomCharacterGame
+                    : null,
+              ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            // Memory Game Card
-            _buildGameCard(
-              title: 'MEMORY GAME',
-              subtitle: 'Find the character card',
-              description:
-                  '3 cards, 1 character. Memorize and find it after shuffle!',
-              cost: '5 COINS',
-              icon: Icons.psychology,
-              color: Colors.purple,
-              canPlay: true,
-              onTap: !_isLoading
-                  ? () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MemoryGameScreen(),
+              // Memory Game Card
+              _buildGameCard(
+                title: 'MEMORY GAME',
+                subtitle: 'Find the character card',
+                description:
+                    '3 cards, 1 character. Memorize and find it after shuffle!',
+                cost: '5 COINS',
+                icon: Icons.psychology,
+                color: Colors.purple,
+                canPlay: true,
+                onTap: !_isLoading
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MemoryGameScreen(),
+                          ),
+                        );
+                      }
+                    : null,
+              ),
+
+              Spacer(),
+
+              // Coins display
+              Consumer<AuthProvider>(
+                builder: (context, authProvider, child) {
+                  return Container(
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.monetization_on,
+                          color: Colors.yellow,
+                          size: 24,
                         ),
-                      );
-                    }
-                  : null,
-            ),
-
-            Spacer(),
-
-            // Coins display
-            Consumer<AuthProvider>(
-              builder: (context, authProvider, child) {
-                return Container(
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[900],
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.monetization_on,
-                        color: Colors.yellow,
-                        size: 24,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        '${authProvider.user?.coins ?? 0} COINS',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(width: 8),
+                        Text(
+                          '${authProvider.user?.coins ?? 0} COINS',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+              SizedBox(height: 20), // Bottom padding
+            ],
+          ),
         ),
       ),
     );
