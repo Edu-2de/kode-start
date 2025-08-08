@@ -37,13 +37,12 @@ class CharacterDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(
         0xFF1C1B20,
-      ), // Background igual ao header da home
+      ), 
       body: SafeArea(
         child: Column(
           children: [
-            // Header igual à home
             Container(
-              color: const Color(0xFF1C1B20), // Cor igual ao header da home
+              color: const Color(0xFF1C1B20), 
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
               child: Row(
                 children: [
@@ -116,16 +115,15 @@ class CharacterDetailScreen extends StatelessWidget {
               ),
             ),
 
-            // Card do personagem estilo foto fornecida
             Expanded(
               child: Container(
-                color: const Color(0xFF0F0F0F), // Fundo escuro para contraste
+                color: const Color(0xFF0F0F0F),
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
                     margin: const EdgeInsets.only(top: 10, bottom: 30),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7D8EFF), // Cor azul dos cards
+                      color: const Color(0xFF7D8EFF), 
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
@@ -139,10 +137,9 @@ class CharacterDetailScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Imagem do personagem
                         AspectRatio(
                           aspectRatio:
-                              1.7, // Proporção similar à foto fornecida
+                              1.7, 
                           child: CachedNetworkImage(
                             imageUrl: character.image,
                             fit: BoxFit.cover,
@@ -167,7 +164,7 @@ class CharacterDetailScreen extends StatelessWidget {
                           ),
                         ),
 
-                        // Informações do personagem
+                        // Characters Informations
                         Padding(
                           padding: const EdgeInsets.all(20),
                           child: Column(
@@ -185,7 +182,7 @@ class CharacterDetailScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 12),
 
-                              // Status com espécie
+                              // Specie
                               Row(
                                 children: [
                                   Container(
@@ -209,28 +206,28 @@ class CharacterDetailScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 16),
 
-                              // Gênero
+                              // Gender
                               _buildModernDetailItem(
                                 'Gender:',
                                 character.gender,
                               ),
                               const SizedBox(height: 12),
 
-                              // Origem
+                              // Origin
                               _buildModernDetailItem(
                                 'Origin:',
                                 character.origin.name,
                               ),
                               const SizedBox(height: 12),
 
-                              // Última localização conhecida
+                              // Last known location
                               _buildModernDetailItem(
                                 'Last known location:',
                                 character.location.name,
                               ),
                               const SizedBox(height: 12),
 
-                              // Primeira aparição
+                              // First appearance
                               _buildModernDetailItem(
                                 'First seen in:',
                                 character.episode.isNotEmpty

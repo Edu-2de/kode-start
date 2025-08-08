@@ -3,8 +3,8 @@ class User {
   final String name;
   final String email;
   final int coins;
-  final int? totalCoinsEarned; // Opcional
-  final DateTime? createdAt; // Opcional
+  final int? totalCoinsEarned; // Optional
+  final DateTime? createdAt; // Optional
 
   User({
     required this.id,
@@ -18,7 +18,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      name: json['username'] ?? json['name'], // Aceita ambos os campos
+      name: json['username'] ?? json['name'], 
       email: json['email'],
       coins: json['coins'],
       totalCoinsEarned: json['total_coins_earned'],
@@ -31,7 +31,7 @@ class User {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'username': name, // Usar username para ser compatível com o backend
+      'username': name,
       'email': email,
       'coins': coins,
       if (totalCoinsEarned != null) 'total_coins_earned': totalCoinsEarned,

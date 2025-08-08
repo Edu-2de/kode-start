@@ -32,7 +32,6 @@ class CharacterCardModern extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Imagem do personagem
             Expanded(
               flex: 3,
               child: CachedNetworkImage(
@@ -52,7 +51,6 @@ class CharacterCardModern extends StatelessWidget {
                 ),
               ),
             ),
-            // Nome do personagem embaixo
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Text(

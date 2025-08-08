@@ -62,7 +62,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    // Usar WidgetsBinding para evitar setState durante build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeAuth();
     });

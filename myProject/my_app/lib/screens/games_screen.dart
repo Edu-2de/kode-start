@@ -39,9 +39,8 @@ class GamesScreenState extends State<GamesScreen> {
       if (!_canPlayRandomGame && _timeRemaining != null) {
         final total = _timeRemaining!['total'] ?? 0;
         if (total > 1000) {
-          // Se ainda há mais de 1 segundo
           setState(() {
-            final newTotal = total - 1000; // Subtrai 1 segundo
+            final newTotal = total - 1000; 
             final hours = (newTotal / (1000 * 60 * 60)).floor();
             final minutes = ((newTotal % (1000 * 60 * 60)) / (1000 * 60))
                 .floor();
@@ -55,7 +54,6 @@ class GamesScreenState extends State<GamesScreen> {
             };
           });
         } else {
-          // Timer acabou, verificar novamente a disponibilidade
           _checkRandomGameAvailability();
         }
       }

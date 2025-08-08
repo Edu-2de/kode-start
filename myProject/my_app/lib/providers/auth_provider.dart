@@ -41,7 +41,7 @@ class AuthProvider with ChangeNotifier {
       _isLoggedIn = true;
       _isLoading = false;
       notifyListeners();
-      return null; // Sucesso
+      return null; // Success
     } else {
       _isLoading = false;
       notifyListeners();
@@ -60,10 +60,9 @@ class AuthProvider with ChangeNotifier {
     final response = await _authService.register(username, email, password);
 
     if (response.success) {
-      // Depois do registro, fazer login automático ou pedir para fazer login
       _isLoading = false;
       notifyListeners();
-      return null; // Sucesso
+      return null; // Success
     } else {
       _isLoading = false;
       notifyListeners();

@@ -30,7 +30,6 @@ class FilterScreenState extends State<FilterScreen>
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
 
-  // Filtros
   String? selectedStatus;
   String? selectedGender;
   String? selectedSpecies;
@@ -204,7 +203,6 @@ class FilterScreenState extends State<FilterScreen>
               SafeArea(
                 child: Column(
                   children: [
-                    // Header igual à home
                     Container(
                       color: style == AppStyle.modern
                           ? const Color(0xFF1C1B20)
@@ -393,7 +391,6 @@ class FilterScreenState extends State<FilterScreen>
 
                                     const SizedBox(height: 24),
 
-                                    // Apenas botão Clear
                                     Row(
                                       children: [
                                         Expanded(
@@ -571,7 +568,6 @@ class FilterScreenState extends State<FilterScreen>
 
     return Column(
       children: [
-        // Loading indicator para carregamento de mais personagens
         if (isLoading && filteredCharacters.isNotEmpty)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

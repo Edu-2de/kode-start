@@ -4,10 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GameService {
-  // Detecta automaticamente a URL correta baseada na plataforma
   static String get baseUrl {
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001/api'; // Emulador Android
+      return 'http://10.0.2.2:3001/api'; // Android Emulator
     } else if (Platform.isIOS) {
       return 'http://localhost:3001/api'; // iOS Simulator
     } else {

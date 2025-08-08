@@ -171,7 +171,6 @@ class SearchScreenState extends State<SearchScreen>
               SafeArea(
                 child: Column(
                   children: [
-                    // Header igual à home
                     Container(
                       color: style == AppStyle.modern
                           ? const Color(0xFF1C1B20)

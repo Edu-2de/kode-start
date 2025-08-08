@@ -6,10 +6,9 @@ import '../models/auth_models.dart';
 import '../models/user.dart';
 
 class AuthService {
-  // Detecta automaticamente a URL correta baseada na plataforma
   static String get baseUrl {
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001/api'; // Emulador Android
+      return 'http://10.0.2.2:3001/api'; // Android Emulator
     } else if (Platform.isIOS) {
       return 'http://localhost:3001/api'; // iOS Simulator
     } else {
@@ -17,7 +16,6 @@ class AuthService {
     }
   }
 
-  // Método para testar conectividade
   Future<bool> testConnection() async {
     try {
       final response = await http
@@ -64,7 +62,6 @@ class AuthService {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Salvar token
         if (responseData['token'] != null) {
           await _saveToken(responseData['token']);
         }
@@ -140,14 +137,13 @@ class AuthService {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        // Salvar token se fornecido (pode ser null no registro)
         if (responseData['token'] != null) {
           await _saveToken(responseData['token']);
         }
 
         return AuthResponse(
           success: true,
-          token: responseData['token'], // Pode ser null
+          token: responseData['token'],
           user: responseData['user'] != null
               ? User.fromJson(responseData['user'])
               : null,
@@ -194,7 +190,6 @@ class AuthService {
       await _removeToken();
       return true;
     } catch (e) {
-      // Mesmo se der erro na API, remove o token localmente
       await _removeToken();
       return true;
     }
@@ -228,7 +223,6 @@ class AuthService {
     final token = await getToken();
     if (token == null) return false;
 
-    // Verificar se o token ainda é válido
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/verify'),

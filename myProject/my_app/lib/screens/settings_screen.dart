@@ -436,7 +436,6 @@ class SettingsScreenState extends State<SettingsScreen> {
                 icon: Icons.help,
                 iconColor: Colors.green,
                 onTap: () {
-                  // TODO: Implement help screen
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Help feature coming soon!'),
