@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const GameController = require('../controllers/gameController');
-const authMiddleware = require('../middleware/authMiddleware');
+import { Router } from 'express';
+const router = Router();
+import GameController from '../controllers/gameController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 // Create instance of GameController
 const gameController = new GameController();
@@ -29,4 +29,4 @@ router.get('/stats', gameController.getUserStats.bind(gameController));
 // Legacy route (keep for compatibility)
 router.post('/unlock-character', gameController.playRandomCharacterGame.bind(gameController));
 
-module.exports = router;
+export default router;

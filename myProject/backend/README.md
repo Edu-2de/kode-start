@@ -74,7 +74,7 @@ A Node.js/Express.js RESTful API that powers the Rick & Morty character collecti
 
    ```bash
    # Create database
-   createdb rickmorty_db
+   create db rickmorty_db
 
    # The application will automatically create tables on first run
    npm start

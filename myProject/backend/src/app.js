@@ -1,6 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
@@ -19,8 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-const authRoutes = require('./routes/authRoutes');
-const gameRoutes = require('./routes/gameRoutes');
+import authRoutes from './routes/authRoutes.js';
+import gameRoutes from './routes/gameRoutes.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/game', gameRoutes);
@@ -48,4 +48,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+export default app;

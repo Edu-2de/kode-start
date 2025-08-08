@@ -1,51 +1,46 @@
--- Tabela de usuários
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
-  username VARCHAR(100) NOT NULL, -- Changed from 'name' to 'username' to match GameController
+  username VARCHAR(100) NOT NULL, 
   email VARCHAR(100) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  coins INTEGER NOT NULL DEFAULT 50, -- Moedas iniciais ao criar conta
-  total_coins_earned INTEGER NOT NULL DEFAULT 50, -- Total de moedas ganhas historicamente
+  coins INTEGER NOT NULL DEFAULT 50, 
+  total_coins_earned INTEGER NOT NULL DEFAULT 50, 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de personagens desbloqueados pelos usuários (GameController format)
 CREATE TABLE IF NOT EXISTS unlocked_characters (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  character_id INTEGER NOT NULL, -- ID do personagem na API Rick and Morty
+  character_id INTEGER NOT NULL,
   character_name VARCHAR(100) NOT NULL,
   character_image VARCHAR(500) NOT NULL,
   character_status VARCHAR(20) NOT NULL,
   character_species VARCHAR(50) NOT NULL,
   character_location VARCHAR(200),
-  rarity VARCHAR(20) NOT NULL DEFAULT 'common', -- common, rare, epic, legendary
+  rarity VARCHAR(20) NOT NULL DEFAULT 'common',
   unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(user_id, character_id) -- Evita que o usuário desbloqueie o mesmo personagem duas vezes
+  UNIQUE(user_id, character_id) 
 );
 
--- Tabela de bônus diários (GameController format)
 CREATE TABLE IF NOT EXISTS daily_bonuses (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   coins_received INTEGER NOT NULL DEFAULT 5,
   claimed_date DATE DEFAULT CURRENT_DATE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(user_id, claimed_date) -- Um bônus por dia
+  UNIQUE(user_id, claimed_date)
 );
 
--- Tabela de histórico de transações de moedas
 CREATE TABLE IF NOT EXISTS coin_transactions (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  transaction_type VARCHAR(20) NOT NULL, -- 'earn', 'spend'
+  transaction_type VARCHAR(20) NOT NULL, 
   amount INTEGER NOT NULL,
-  reason VARCHAR(100) NOT NULL, -- 'daily_login', 'character_unlock', 'bonus', etc.
+  reason VARCHAR(100) NOT NULL, 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de sessões de usuários (para controle de login)
 CREATE TABLE IF NOT EXISTS user_sessions (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -54,17 +49,15 @@ CREATE TABLE IF NOT EXISTS user_sessions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de histórico de login diário (para dar moedas)
 CREATE TABLE IF NOT EXISTS daily_logins (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   login_date DATE NOT NULL,
   coins_earned INTEGER NOT NULL DEFAULT 10,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(user_id, login_date) -- Um login por dia
+  UNIQUE(user_id, login_date) 
 );
 
--- Tabela para controlar jogos diários de personagem aleatório
 CREATE TABLE IF NOT EXISTS daily_character_games (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -74,10 +67,9 @@ CREATE TABLE IF NOT EXISTS daily_character_games (
   coins_spent INTEGER DEFAULT 10,
   bonus_coins INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(user_id, game_date) -- Um jogo por dia
+  UNIQUE(user_id, game_date) 
 );
 
--- Tabela para resultados do jogo da memória
 CREATE TABLE IF NOT EXISTS memory_game_results (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -87,14 +79,13 @@ CREATE TABLE IF NOT EXISTS memory_game_results (
   game_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Inserir usuários de exemplo
+
 INSERT INTO users (username, email, password_hash, coins, total_coins_earned) VALUES
 ('Alex', 'alexmind@gmail.com', '$2b$10$o3Lx9SXG2xPq7pYLzaUq/uVWxioqy4mI/Q9BWMxJRTwE6CJGbBvzy', 200, 200),
 ('Val', 'vanbanding@gmail.com','$2b$10$6E07uTkNqMJtfMwmkRE1EuAK38BFxCmihM7Tuf3MVuCJgiN8dMPOK', 150, 150),
 ('Mario', 'mariobros@gmail.com','$2b$10$3MQb43.Blm.Ypl2TviJMzu7O87J5Lk2QieT8fsGsrCOf4RXunu67G', 300, 300)
 ON CONFLICT (email) DO NOTHING;
 
--- Índices para melhor performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_token ON user_sessions(session_token);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id);
@@ -105,7 +96,6 @@ CREATE INDEX IF NOT EXISTS idx_daily_bonuses_user_date ON daily_bonuses(user_id,
 CREATE INDEX IF NOT EXISTS idx_daily_character_games_user_date ON daily_character_games(user_id, game_date);
 CREATE INDEX IF NOT EXISTS idx_memory_game_results_user_id ON memory_game_results(user_id);
 
--- Função para atualizar updated_at automaticamente
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -114,6 +104,6 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Trigger para atualizar updated_at na tabela users
+
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); 

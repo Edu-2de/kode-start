@@ -1,10 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-const pool = require('./connection');
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { query } from './connection.js';
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const checkIfTableExist = async () => {
   try {
-    const result = await pool.query(`
+    const result = await query(`
       SELECT EXISTS (
         SELECT FROM information_schema.tables
         WHERE table_schema = 'public'
@@ -35,10 +40,10 @@ const setupDB = async () => {
       return;
     }
 
-    const schemaPath = path.join(__dirname, 'sql', 'schema.sql');
-    const schemaSql = fs.readFileSync(schemaPath, 'utf-8');
+    const schemaPath = join(__dirname, 'sql', 'schema.sql');
+    const schemaSql = readFileSync(schemaPath, 'utf-8');
 
-    await pool.query(schemaSql);
+    await query(schemaSql);
     console.log('✅ Database schema created successfully');
 
     console.log('📊 Tables created:');
@@ -50,7 +55,7 @@ const setupDB = async () => {
     console.log('   - daily_logins');
 
     // Test with user count
-    const result = await pool.query('SELECT COUNT(*) FROM users');
+    const result = await query('SELECT COUNT(*) FROM users');
     console.log(`👥 Sample users created: ${result.rows[0].count}`);
 
     setupExecuted = true;
@@ -68,7 +73,7 @@ const setupDB = async () => {
 
 const testConnection = async () => {
   try {
-    const result = await pool.query('SELECT NOW()');
+    const result = await query('SELECT NOW()');
     console.log('✅ Database connection test successful');
     return true;
   } catch (error) {
@@ -77,8 +82,8 @@ const testConnection = async () => {
   }
 };
 
-// Auto-setup when required as main module
-if (require.main === module) {
+// Auto-setup when run as main module
+if (import.meta.url === `file://${process.argv[1]}`) {
   (async () => {
     try {
       const connected = await testConnection();
@@ -97,4 +102,5 @@ if (require.main === module) {
   })();
 }
 
-module.exports = { setupDB, testConnection, checkIfTableExist };
+export { setupDB, testConnection, checkIfTableExist };
+export default { setupDB, testConnection, checkIfTableExist };

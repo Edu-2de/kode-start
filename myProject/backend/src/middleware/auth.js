@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const pool = require('../database/connection');
+import { verify } from 'jsonwebtoken';
+import { query } from '../database/connection';
 
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -7,16 +7,14 @@ const authenticateToken = async (req, res, next) => {
 
   if (!token) {
     return res.status(401).json({
-      error: 'Token de acesso requerido',
-      message: 'Você precisa estar logado para acessar este recurso',
+      error: 'Access token required',
+      message: 'You must be logged in to access this feature.',
     });
   }
 
   try {
-    // Verificar se o token é válido
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'rick_morty_secret_key');
+    const decoded = verify(token, process.env.JWT_SECRET || 'rick_morty_secret_key');
 
-    // Verificar se a sessão ainda é válida no banco
     const sessionQuery = `
       SELECT s.*, u.id as user_id, u.name, u.email, u.coins 
       FROM user_sessions s 
@@ -24,16 +22,15 @@ const authenticateToken = async (req, res, next) => {
       WHERE s.session_token = $1 AND s.expires_at > NOW()
     `;
 
-    const sessionResult = await pool.query(sessionQuery, [token]);
+    const sessionResult = await query(sessionQuery, [token]);
 
     if (sessionResult.rows.length === 0) {
       return res.status(401).json({
-        error: 'Sessão expirada ou inválida',
-        message: 'Por favor, faça login novamente',
+        error: 'Session expired or invalid',
+        message: 'Please log in again',
       });
     }
 
-    // Adicionar informações do usuário ao request
     req.user = {
       id: sessionResult.rows[0].user_id,
       name: sessionResult.rows[0].name,
@@ -43,15 +40,14 @@ const authenticateToken = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('Erro na autenticação:', error);
+    console.error('Authentication error:', error);
     return res.status(403).json({
-      error: 'Token inválido',
-      message: 'Token de acesso inválido ou corrompido',
+      error: 'Invalid token',
+      message: 'Invalid or corrupted access token',
     });
   }
 };
 
-// Middleware opcional - não falha se não houver token
 const optionalAuth = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -62,7 +58,7 @@ const optionalAuth = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'rick_morty_secret_key');
+    const decoded = verify(token, process.env.JWT_SECRET || 'rick_morty_secret_key');
 
     const sessionQuery = `
       SELECT s.*, u.id as user_id, u.name, u.email, u.coins 
@@ -71,7 +67,7 @@ const optionalAuth = async (req, res, next) => {
       WHERE s.session_token = $1 AND s.expires_at > NOW()
     `;
 
-    const sessionResult = await pool.query(sessionQuery, [token]);
+    const sessionResult = await query(sessionQuery, [token]);
 
     if (sessionResult.rows.length > 0) {
       req.user = {
@@ -90,7 +86,7 @@ const optionalAuth = async (req, res, next) => {
   next();
 };
 
-module.exports = {
+export default {
   authenticateToken,
   optionalAuth,
 };

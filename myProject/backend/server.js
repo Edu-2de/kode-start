@@ -1,32 +1,33 @@
-// Carregar variáveis de ambiente
-require('dotenv').config();
+// Load environment variables
+import dotenv from 'dotenv';
+dotenv.config();
 
-const app = require('./src/app');
-const { setupDB, testConnection } = require('./src/database/setupDB');
+import app from './src/app.js';
+import { setupDB, testConnection } from './src/database/setupDB.js';
 
-// Verificar se as variáveis de ambiente necessárias estão definidas
+// Check if required environment variables are set
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
 
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingVars.length > 0) {
-  console.error('❌ Variáveis de ambiente obrigatórias não encontradas:');
+  console.error('❌ Required environment variables not found:');
   missingVars.forEach(varName => {
     console.error(`   - ${varName}`);
   });
-  console.error('\n📝 Crie um arquivo .env na raiz do projeto com essas variáveis.');
-  console.error('Exemplo:');
+  console.error('\n📝 Create a .env file in the project root with these variables.');
+  console.error('Example:');
   console.error('DATABASE_URL=postgresql://username:password@localhost:5432/rickmorty_db');
-  console.error('JWT_SECRET=seu_jwt_secret_muito_seguro_aqui');
+  console.error('JWT_SECRET=your_very_secure_jwt_secret_here');
   process.exit(1);
 }
 
-// Log das configurações (sem mostrar dados sensíveis)
-console.log('⚙️  Configurações carregadas:');
+// Log configuration (without showing sensitive data)
+console.log('⚙️  Loaded configuration:');
 console.log(`   📊 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 console.log(`   🚀 PORT: ${process.env.PORT || 3000}`);
-console.log(`   🗄️  DATABASE: ${process.env.DATABASE_URL ? '✅ Configurado' : '❌ Não configurado'}`);
-console.log(`   🔐 JWT_SECRET: ${process.env.JWT_SECRET ? '✅ Configurado' : '❌ Não configurado'}`);
+console.log(`   🗄️  DATABASE: ${process.env.DATABASE_URL ? '✅ Set' : '❌ Not set'}`);
+console.log(`   🔐 JWT_SECRET: ${process.env.JWT_SECRET ? '✅ Set' : '❌ Not set'}`);
 console.log('');
 
 // Initialize database and start server
@@ -42,46 +43,46 @@ async function startServer() {
     // Setup database (create tables if they don't exist)
     await setupDB();
 
-    // Iniciar servidor
+    // Start server
     const PORT = process.env.PORT || 3000;
 
     const server = app.listen(PORT, () => {
       console.log('🎮 Rick & Morty Game API');
-      console.log(`🚀 Servidor rodando na porta ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
       console.log(`🌐 Health check: http://localhost:${PORT}/health`);
       console.log(`📱 API Base URL: http://localhost:${PORT}/api`);
       console.log('');
-      console.log('Endpoints disponíveis:');
-      console.log('📝 POST /api/auth/register - Criar conta');
-      console.log('🔐 POST /api/auth/login - Fazer login');
-      console.log('👤 GET /api/auth/profile - Perfil do usuário');
-      console.log('🎯 POST /api/game/unlock-character - Desbloquear personagem');
-      console.log('👥 GET /api/game/characters - Listar personagens');
-      console.log('🎁 POST /api/game/daily-bonus - Bônus diário');
-      console.log('📊 GET /api/game/stats - Estatísticas');
+      console.log('Available endpoints:');
+      console.log('📝 POST /api/auth/register - Register account');
+      console.log('🔐 POST /api/auth/login - Login');
+      console.log('👤 GET /api/auth/profile - User profile');
+      console.log('🎯 POST /api/game/unlock-character - Unlock character');
+      console.log('👥 GET /api/game/characters - List characters');
+      console.log('🎁 POST /api/game/daily-bonus - Daily bonus');
+      console.log('📊 GET /api/game/stats - Statistics');
       console.log('');
     });
 
     // Graceful shutdown
     process.on('SIGTERM', () => {
-      console.log('🛑 SIGTERM recebido. Encerrando servidor...');
+      console.log('🛑 SIGTERM received. Shutting down server...');
       server.close(() => {
-        console.log('✅ Servidor encerrado com sucesso.');
+        console.log('✅ Server shut down successfully.');
         process.exit(0);
       });
     });
 
     process.on('SIGINT', () => {
-      console.log('🛑 SIGINT recebido. Encerrando servidor...');
+      console.log('🛑 SIGINT received. Shutting down server...');
       server.close(() => {
-        console.log('✅ Servidor encerrado com sucesso.');
+        console.log('✅ Server shut down successfully.');
         process.exit(0);
       });
     });
 
     return server;
   } catch (error) {
-    console.error('💥 Falha ao iniciar servidor:', error);
+    console.error('💥 Failed to start server:', error);
     process.exit(1);
   }
 }

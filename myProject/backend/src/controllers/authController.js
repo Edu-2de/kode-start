@@ -1,6 +1,9 @@
-const { hash, compare } = require('bcrypt');
-const { sign } = require('jsonwebtoken');
-const { query } = require('../config/database');
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { query } from '../config/database.js';
+
+const { hash, compare } = bcrypt;
+const { sign } = jwt;
 
 const authController = {
   register: async (req, res) => {
@@ -252,4 +255,5 @@ const authController = {
   },
 };
 
-module.exports = authController;
+export const { register, login, logout, verifyToken, getProfile } = authController;
+export default authController;

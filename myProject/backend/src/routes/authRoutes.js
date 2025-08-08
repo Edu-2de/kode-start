@@ -1,14 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('../controllers/authController');
-const authMiddleware = require('../middleware/authMiddleware');
+import { Router } from 'express';
+const router = Router();
+import { register, login, getProfile, logout } from '../controllers/authController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 // Public routes
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/register', register);
+router.post('/login', login);
 
 // Protected routes
-router.get('/profile', authMiddleware, authController.getProfile);
-router.post('/logout', authMiddleware, authController.logout);
+router.get('/profile', authMiddleware, getProfile);
+router.post('/logout', authMiddleware, logout);
 
-module.exports = router;
+export default router;

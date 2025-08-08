@@ -1,5 +1,7 @@
-const jwt = require('jsonwebtoken');
-const pool = require('../config/database');
+import jwt from 'jsonwebtoken';
+import { query } from '../config/database.js';
+
+const { verify } = jwt;
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -14,10 +16,10 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // Verify JWT token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verify(token, process.env.JWT_SECRET);
 
     // Check if session exists in database
-    const sessionResult = await pool.query('SELECT user_id, expires_at FROM user_sessions WHERE session_token = $1', [
+    const sessionResult = await query('SELECT user_id, expires_at FROM user_sessions WHERE session_token = $1', [
       token,
     ]);
 
@@ -33,7 +35,7 @@ const authMiddleware = async (req, res, next) => {
     // Check if session is expired
     if (new Date() > new Date(session.expires_at)) {
       // Remove expired session
-      await pool.query('DELETE FROM user_sessions WHERE session_token = $1', [token]);
+      await query('DELETE FROM user_sessions WHERE session_token = $1', [token]);
       return res.status(401).json({
         error: 'Access denied',
         message: 'Session expired',
@@ -41,7 +43,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // Get user data
-    const userResult = await pool.query('SELECT id, username, email FROM users WHERE id = $1', [decoded.userId]);
+    const userResult = await query('SELECT id, username, email FROM users WHERE id = $1', [decoded.userId]);
 
     if (userResult.rows.length === 0) {
       return res.status(401).json({
@@ -76,4 +78,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

@@ -1,5 +1,7 @@
-const pool = require('../config/database');
-const axios = require('axios');
+import { query } from '../config/database.js';
+import axios from 'axios';
+
+const { get } = axios;
 
 class GameController {
   constructor() {
@@ -15,7 +17,7 @@ class GameController {
     try {
       // Check if user already played today
       const today = new Date().toISOString().split('T')[0];
-      const todayGame = await pool.query('SELECT * FROM daily_character_games WHERE user_id = $1 AND game_date = $2', [
+      const todayGame = await query('SELECT * FROM daily_character_games WHERE user_id = $1 AND game_date = $2', [
         userId,
         today,
       ]);
@@ -34,7 +36,7 @@ class GameController {
       }
 
       // Check if user has enough coins
-      const userResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
+      const userResult = await query('SELECT coins FROM users WHERE id = $1', [userId]);
 
       if (userResult.rows.length === 0) {
         return res.status(404).json({ error: 'User not found' });
@@ -52,11 +54,11 @@ class GameController {
 
       // Get a random character from Rick and Morty API
       const randomId = Math.floor(Math.random() * 826) + 1; // Rick and Morty has 826+ characters
-      const response = await axios.get(`https://rickandmortyapi.com/api/character/${randomId}`);
+      const response = await get(`https://rickandmortyapi.com/api/character/${randomId}`);
       const character = response.data;
 
       // Check if user already has this character
-      const existingCharacter = await pool.query(
+      const existingCharacter = await query(
         'SELECT * FROM unlocked_characters WHERE user_id = $1 AND character_id = $2',
         [userId, character.id]
       );
@@ -64,10 +66,10 @@ class GameController {
       if (existingCharacter.rows.length > 0) {
         // If already unlocked, give bonus coins instead
         const bonusCoins = 5;
-        await pool.query('UPDATE users SET coins = coins + $1 WHERE id = $2', [bonusCoins, userId]);
+        await query('UPDATE users SET coins = coins + $1 WHERE id = $2', [bonusCoins, userId]);
 
         // Record the game as played today
-        await pool.query(
+        await query(
           'INSERT INTO daily_character_games (user_id, game_date, character_id, already_owned, bonus_coins) VALUES ($1, $2, $3, $4, $5)',
           [userId, today, character.id, true, bonusCoins]
         );
@@ -82,7 +84,7 @@ class GameController {
       }
 
       // Deduct coins from user
-      await pool.query('UPDATE users SET coins = coins - $1 WHERE id = $2', [UNLOCK_COST, userId]);
+      await query('UPDATE users SET coins = coins - $1 WHERE id = $2', [UNLOCK_COST, userId]);
 
       // Determine rarity based on character status
       let rarity = 'common';
@@ -95,7 +97,7 @@ class GameController {
       }
 
       // Save unlocked character
-      await pool.query(
+      await query(
         'INSERT INTO unlocked_characters (user_id, character_id, character_name, character_image, character_status, character_species, character_location, rarity, unlocked_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
         [
           userId,
@@ -110,19 +112,21 @@ class GameController {
       );
 
       // Record the game as played today
-      await pool.query(
+      await query(
         'INSERT INTO daily_character_games (user_id, game_date, character_id, already_owned, coins_spent) VALUES ($1, $2, $3, $4, $5)',
         [userId, today, character.id, false, UNLOCK_COST]
       );
 
       // Record coin transaction
-      await pool.query(
-        'INSERT INTO coin_transactions (user_id, transaction_type, amount, reason) VALUES ($1, $2, $3, $4)',
-        [userId, 'spend', UNLOCK_COST, 'random_character_game']
-      );
+      await query('INSERT INTO coin_transactions (user_id, transaction_type, amount, reason) VALUES ($1, $2, $3, $4)', [
+        userId,
+        'spend',
+        UNLOCK_COST,
+        'random_character_game',
+      ]);
 
       // Get updated user coins
-      const updatedUserResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
+      const updatedUserResult = await query('SELECT coins FROM users WHERE id = $1', [userId]);
 
       res.json({
         success: true,
@@ -151,7 +155,7 @@ class GameController {
 
     try {
       // Check if user has enough coins
-      const userResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
+      const userResult = await query('SELECT coins FROM users WHERE id = $1', [userId]);
       if (userResult.rows.length === 0) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -167,7 +171,7 @@ class GameController {
 
       // Get a random character
       const randomId = Math.floor(Math.random() * 826) + 1;
-      const response = await axios.get(`https://rickandmortyapi.com/api/character/${randomId}`);
+      const response = await get(`https://rickandmortyapi.com/api/character/${randomId}`);
       const character = response.data;
 
       // Create game session
@@ -190,7 +194,7 @@ class GameController {
       gameSession.cards[gameSession.correctPosition].hasCharacter = true;
 
       // Deduct coins
-      await pool.query('UPDATE users SET coins = coins - $1 WHERE id = $2', [GAME_COST, userId]);
+      await query('UPDATE users SET coins = coins - $1 WHERE id = $2', [GAME_COST, userId]);
 
       // Store game session temporarily (in a real app, you'd use Redis or similar)
       this.activeMemoryGames.set(gameSession.id, gameSession);
@@ -241,7 +245,7 @@ class GameController {
 
       if (isCorrect) {
         // Check if user already has this character
-        const existingCharacter = await pool.query(
+        const existingCharacter = await query(
           'SELECT * FROM unlocked_characters WHERE user_id = $1 AND character_id = $2',
           [userId, gameSession.character.id]
         );
@@ -260,7 +264,7 @@ class GameController {
             rarity = 'legendary';
           }
 
-          await pool.query(
+          await query(
             'INSERT INTO unlocked_characters (user_id, character_id, character_name, character_image, character_status, character_species, character_location, rarity, unlocked_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
             [
               userId,
@@ -280,17 +284,17 @@ class GameController {
         }
 
         // Give reward coins
-        await pool.query('UPDATE users SET coins = coins + $1 WHERE id = $2', [reward, userId]);
+        await query('UPDATE users SET coins = coins + $1 WHERE id = $2', [reward, userId]);
 
         // Record coin transaction
-        await pool.query(
+        await query(
           'INSERT INTO coin_transactions (user_id, transaction_type, amount, reason) VALUES ($1, $2, $3, $4)',
           [userId, 'earn', reward, 'memory_game_win']
         );
       }
 
       // Record game result
-      await pool.query(
+      await query(
         'INSERT INTO memory_game_results (user_id, character_id, correct_guess, coins_earned, game_date) VALUES ($1, $2, $3, $4, NOW())',
         [userId, gameSession.character.id, isCorrect, reward]
       );
@@ -299,7 +303,7 @@ class GameController {
       this.activeMemoryGames.delete(gameId);
 
       // Get updated coins
-      const userResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
+      const userResult = await query('SELECT coins FROM users WHERE id = $1', [userId]);
 
       res.json({
         success: true,
@@ -351,7 +355,7 @@ class GameController {
     const today = new Date().toISOString().split('T')[0];
 
     try {
-      const todayGame = await pool.query('SELECT * FROM daily_character_games WHERE user_id = $1 AND game_date = $2', [
+      const todayGame = await query('SELECT * FROM daily_character_games WHERE user_id = $1 AND game_date = $2', [
         userId,
         today,
       ]);
@@ -384,10 +388,9 @@ class GameController {
     const userId = req.user.id;
 
     try {
-      const result = await pool.query(
-        'SELECT * FROM unlocked_characters WHERE user_id = $1 ORDER BY unlocked_at DESC',
-        [userId]
-      );
+      const result = await query('SELECT * FROM unlocked_characters WHERE user_id = $1 ORDER BY unlocked_at DESC', [
+        userId,
+      ]);
 
       res.json({
         characters: result.rows,
@@ -407,7 +410,7 @@ class GameController {
     try {
       // Check if user already claimed today's bonus
       const today = new Date().toISOString().split('T')[0];
-      const bonusResult = await pool.query('SELECT * FROM daily_bonuses WHERE user_id = $1 AND claimed_date = $2', [
+      const bonusResult = await query('SELECT * FROM daily_bonuses WHERE user_id = $1 AND claimed_date = $2', [
         userId,
         today,
       ]);
@@ -420,17 +423,17 @@ class GameController {
       }
 
       // Give daily bonus
-      await pool.query('UPDATE users SET coins = coins + $1 WHERE id = $2', [DAILY_BONUS, userId]);
+      await query('UPDATE users SET coins = coins + $1 WHERE id = $2', [DAILY_BONUS, userId]);
 
       // Record the bonus claim
-      await pool.query('INSERT INTO daily_bonuses (user_id, coins_received, claimed_date) VALUES ($1, $2, $3)', [
+      await query('INSERT INTO daily_bonuses (user_id, coins_received, claimed_date) VALUES ($1, $2, $3)', [
         userId,
         DAILY_BONUS,
         today,
       ]);
 
       // Get updated user coins
-      const userResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
+      const userResult = await query('SELECT coins FROM users WHERE id = $1', [userId]);
 
       res.json({
         message: 'Daily bonus claimed!',
@@ -449,14 +452,14 @@ class GameController {
 
     try {
       // Get user info
-      const userResult = await pool.query('SELECT username, coins, created_at FROM users WHERE id = $1', [userId]);
+      const userResult = await query('SELECT username, coins, created_at FROM users WHERE id = $1', [userId]);
 
       if (userResult.rows.length === 0) {
         return res.status(404).json({ error: 'User not found' });
       }
 
       // Get character stats
-      const statsResult = await pool.query(
+      const statsResult = await query(
         `
         SELECT 
           COUNT(*) as total_characters,
@@ -471,7 +474,7 @@ class GameController {
       );
 
       // Get login streak
-      const bonusResult = await pool.query(
+      const bonusResult = await query(
         `
         SELECT COUNT(*) as login_days
         FROM daily_bonuses 
@@ -506,4 +509,4 @@ class GameController {
   }
 }
 
-module.exports = GameController;
+export default GameController;

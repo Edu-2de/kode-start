@@ -1,8 +1,10 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 console.log('🔧 Database config: ', {
-  connectionString: process.env.DATABASE_URL ? 'Configurado via DATABASE_URL' : 'Não configurado',
+  connectionString: process.env.DATABASE_URL ? 'Configured via DATABASE_URL' : 'Not configured',
   host: process.env.DATABASE_URL ? 'Via DATABASE_URL' : 'localhost',
   database: process.env.DATABASE_URL ? 'Via DATABASE_URL' : 'rick_morty_db',
 });
@@ -16,12 +18,14 @@ const pool = new Pool({
 });
 
 pool.on('connect', () => {
-  console.log('✅ Conectado ao banco de dados PostgreSQL');
+  console.log('✅ Connected to PostgreSQL database');
 });
 
 pool.on('error', err => {
-  console.error('❌ Erro na conexão com o banco de dados:', err);
+  console.error('❌ Error connecting to database:', err);
   process.exit(-1);
 });
 
-module.exports = pool;
+// Export query function
+export const query = (text, params) => pool.query(text, params);
+export default pool;
