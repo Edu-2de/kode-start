@@ -7,10 +7,10 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   final GameService _gameService = GameService();
   Map<String, dynamic>? _userStats;
   bool _isLoading = true;
@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _userStats = response;
       });
     } catch (e) {
-      print('Error loading user stats: $e');
+      //
       _showErrorDialog('Failed to load profile data');
     } finally {
       setState(() => _isLoading = false);
@@ -42,18 +42,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final response = await _gameService.getDailyBonus();
 
       // Update user coins in provider
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.refreshProfile();
+      if (mounted) {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        await authProvider.refreshProfile();
+      }
 
-      _showSuccessDialog(
-        'Daily bonus claimed!',
-        'You received ${response['coinsReceived']} coins!',
-      );
+      if (mounted) {
+        _showSuccessDialog(
+          'Daily bonus claimed!',
+          'You received ${response['coinsReceived']} coins!',
+        );
+      }
 
       // Reload stats to reflect changes
       _loadUserStats();
     } catch (e) {
-      _showErrorDialog(e.toString().replaceAll('Exception: ', ''));
+      if (mounted) {
+        _showErrorDialog(e.toString().replaceAll('Exception: ', ''));
+      }
     }
   }
 
@@ -114,8 +120,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.blue.withOpacity(0.1),
-            Colors.purple.withOpacity(0.1),
+            Colors.blue.withValues(alpha: 0.1),
+            Colors.purple.withValues(alpha: 0.1),
           ],
         ),
       ),
@@ -126,9 +132,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue.withValues(alpha: 0.2),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.blue.withOpacity(0.5), width: 2),
+              border: Border.all(
+                color: Colors.blue.withValues(alpha: 0.5),
+                width: 2,
+              ),
             ),
             child: Icon(Icons.person, size: 50, color: Colors.blue),
           ),
@@ -156,10 +165,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.yellow.withOpacity(0.2),
+              color: Colors.yellow.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(25),
               border: Border.all(
-                color: Colors.yellow.withOpacity(0.5),
+                color: Colors.yellow.withValues(alpha: 0.5),
                 width: 1,
               ),
             ),
@@ -191,33 +200,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Color color,
   ) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 30),
-          SizedBox(height: 10),
-          Text(
-            value,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          Icon(icon, color: color, size: 24),
+          SizedBox(height: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          SizedBox(height: 5),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+          SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -296,9 +313,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         children: [
@@ -338,14 +355,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           color: Colors.grey[900],
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: color.withOpacity(0.3), width: 1),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
         ),
         child: Row(
           children: [
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -473,9 +490,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               crossAxisCount: 2,
-                              mainAxisSpacing: 15,
-                              crossAxisSpacing: 15,
-                              childAspectRatio: 1.2,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
+                              childAspectRatio: 1.1, // Adjusted for better fit
                               children: [
                                 _buildStatItem(
                                   'Characters\nUnlocked',

@@ -13,10 +13,10 @@ class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  State<SearchScreen> createState() => SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen>
+class SearchScreenState extends State<SearchScreen>
     with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -261,7 +261,7 @@ class _SearchScreenState extends State<SearchScreen>
                         borderRadius: BorderRadius.circular(12),
                         border: style == AppStyle.classic
                             ? Border.all(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.withValues(alpha: 0.1),
                                 width: 1,
                               )
                             : null,

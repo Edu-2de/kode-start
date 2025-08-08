@@ -9,10 +9,10 @@ class MemoryGameScreen extends StatefulWidget {
   const MemoryGameScreen({super.key});
 
   @override
-  _MemoryGameScreenState createState() => _MemoryGameScreenState();
+  MemoryGameScreenState createState() => MemoryGameScreenState();
 }
 
-class _MemoryGameScreenState extends State<MemoryGameScreen> {
+class MemoryGameScreenState extends State<MemoryGameScreen> {
   final GameService _gameService = GameService();
   final AuthService _authService = AuthService();
   bool _isLoading = false;
@@ -98,10 +98,11 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
     try {
       final token = await _authService.getToken();
       if (token == null) {
-        _showErrorDialog('Please login again');
+        if (mounted) _showErrorDialog('Please login again');
         return;
       }
 
+      if (!mounted) return;
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final response = await _gameService.submitMemoryGameGuess(
         token,
@@ -110,20 +111,21 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
       );
 
       if (response['success'] == true) {
-        setState(() => _gameEnded = true);
+        if (mounted) setState(() => _gameEnded = true);
 
         // Update user coins
         await authProvider.refreshProfile();
 
         // Show result dialog
-        _showResultDialog(response);
+        if (mounted) _showResultDialog(response);
       } else {
-        _showErrorDialog(response['message'] ?? 'Failed to submit guess');
+        if (mounted)
+          _showErrorDialog(response['message'] ?? 'Failed to submit guess');
       }
     } catch (e) {
-      _showErrorDialog('Error: $e');
+      if (mounted) _showErrorDialog('Error: $e');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -314,226 +316,255 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
       body: _isLoading && !_gameStarted
           ? Center(child: CircularProgressIndicator(color: Colors.purple))
           : SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    // Instructions
-                    Container(
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[900],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(20),
                       child: Column(
                         children: [
-                          Text(
-                            'Find the character!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          // Instructions
+                          Container(
+                            padding: EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Memorize which card has the character, then find it after the cards flip!',
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 14,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 20),
-
-                    // Character info (during memorization)
-                    if (_character != null && _cardsRevealed) ...[
-                      Text(
-                        'Remember this character:',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40),
-                          border: Border.all(color: Colors.purple, width: 2),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(38),
-                          child: Image.network(
-                            _character!['image'],
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[800],
-                                child: Icon(Icons.person, color: Colors.white),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        _character!['name'],
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-
-                    // Timer (during memorization)
-                    if (_cardsRevealed && _memoryTimeLeft > 0) ...[
-                      Text(
-                        'Cards will flip in: $_memoryTimeLeft',
-                        style: TextStyle(
-                          color: Colors.orange,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-
-                    // Game area
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (_gameStarted) ...[
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: _cards.asMap().entries.map((entry) {
-                                  int index = entry.key;
-                                  Map<String, dynamic> card = entry.value;
-                                  bool isSelected = _selectedCard == index;
-                                  bool hasCharacter =
-                                      card['hasCharacter'] ?? false;
-
-                                  return GestureDetector(
-                                    onTap: () => _selectCard(index),
-                                    child: Container(
-                                      width: 100,
-                                      height: 120,
-                                      decoration: BoxDecoration(
-                                        color: _cardsRevealed
-                                            ? (hasCharacter
-                                                  ? Colors.purple.withOpacity(
-                                                      0.3,
-                                                    )
-                                                  : Colors.grey[800])
-                                            : (isSelected
-                                                  ? Colors.purple.withOpacity(
-                                                      0.5,
-                                                    )
-                                                  : Colors.grey[800]),
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: _cardsRevealed
-                                              ? (hasCharacter
-                                                    ? Colors.purple
-                                                    : Colors.grey[600]!)
-                                              : (isSelected
-                                                    ? Colors.purple
-                                                    : Colors.grey[600]!),
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          if (_cardsRevealed &&
-                                              hasCharacter &&
-                                              _character != null) ...[
-                                            Container(
-                                              width: 60,
-                                              height: 60,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                                child: Image.network(
-                                                  _character!['image'],
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder:
-                                                      (
-                                                        context,
-                                                        error,
-                                                        stackTrace,
-                                                      ) {
-                                                        return Container(
-                                                          color:
-                                                              Colors.grey[700],
-                                                          child: Icon(
-                                                            Icons.person,
-                                                            color: Colors.white,
-                                                            size: 30,
-                                                          ),
-                                                        );
-                                                      },
-                                                ),
-                                              ),
-                                            ),
-                                          ] else ...[
-                                            Icon(
-                                              Icons.help_outline,
-                                              color: Colors.grey[600],
-                                              size: 40,
-                                            ),
-                                          ],
-                                          SizedBox(height: 8),
-                                          Text(
-                                            'Card ${index + 1}',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-
-                              if (!_cardsRevealed && !_gameEnded) ...[
-                                SizedBox(height: 30),
+                            child: Column(
+                              children: [
                                 Text(
-                                  'Which card has the character?',
+                                  'Find the character!',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Memorize which card has the character, then find it after the cards flip!',
+                                  style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: 14,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ],
-                            ],
+                            ),
+                          ),
+
+                          SizedBox(height: 20),
+
+                          // Character info (during memorization)
+                          if (_character != null && _cardsRevealed) ...[
+                            Text(
+                              'Remember this character:',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(40),
+                                border: Border.all(
+                                  color: Colors.purple,
+                                  width: 2,
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(38),
+                                child: Image.network(
+                                  _character!['image'],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.grey[800],
+                                      child: Icon(
+                                        Icons.person,
+                                        color: Colors.white,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              _character!['name'],
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 20),
                           ],
-                        ),
+
+                          // Timer (during memorization)
+                          if (_cardsRevealed && _memoryTimeLeft > 0) ...[
+                            Text(
+                              'Cards will flip in: $_memoryTimeLeft',
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                          ],
+
+                          // Game area
+                          if (_gameStarted) ...[
+                            SizedBox(
+                              height: 200, // Fixed height for game area
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: _cards.asMap().entries.map((
+                                        entry,
+                                      ) {
+                                        int index = entry.key;
+                                        Map<String, dynamic> card = entry.value;
+                                        bool isSelected =
+                                            _selectedCard == index;
+                                        bool hasCharacter =
+                                            card['hasCharacter'] ?? false;
+
+                                        return GestureDetector(
+                                          onTap: () => _selectCard(index),
+                                          child: Container(
+                                            width: 100,
+                                            height: 120,
+                                            decoration: BoxDecoration(
+                                              color: _cardsRevealed
+                                                  ? (hasCharacter
+                                                        ? Colors.purple
+                                                              .withValues(
+                                                                alpha: 0.3,
+                                                              )
+                                                        : Colors.grey[800])
+                                                  : (isSelected
+                                                        ? Colors.purple
+                                                              .withValues(
+                                                                alpha: 0.5,
+                                                              )
+                                                        : Colors.grey[800]),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                color: _cardsRevealed
+                                                    ? (hasCharacter
+                                                          ? Colors.purple
+                                                          : Colors.grey[600]!)
+                                                    : (isSelected
+                                                          ? Colors.purple
+                                                          : Colors.grey[600]!),
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                if (_cardsRevealed &&
+                                                    hasCharacter &&
+                                                    _character != null) ...[
+                                                  Container(
+                                                    width: 60,
+                                                    height: 60,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            30,
+                                                          ),
+                                                    ),
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            30,
+                                                          ),
+                                                      child: Image.network(
+                                                        _character!['image'],
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder:
+                                                            (
+                                                              context,
+                                                              error,
+                                                              stackTrace,
+                                                            ) {
+                                                              return Container(
+                                                                color: Colors
+                                                                    .grey[700],
+                                                                child: Icon(
+                                                                  Icons.person,
+                                                                  color: Colors
+                                                                      .white,
+                                                                  size: 30,
+                                                                ),
+                                                              );
+                                                            },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ] else ...[
+                                                  Icon(
+                                                    Icons.help_outline,
+                                                    color: Colors.grey[600],
+                                                    size: 40,
+                                                  ),
+                                                ],
+                                                SizedBox(height: 8),
+                                                Text(
+                                                  'Card ${index + 1}',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+
+                                    if (!_cardsRevealed && !_gameEnded) ...[
+                                      SizedBox(height: 30),
+                                      Text(
+                                        'Which card has the character?',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+
+                          SizedBox(height: 30), // Extra space before coins
+                        ],
                       ),
                     ),
+                  ),
 
-                    // Coins display
-                    Consumer<AuthProvider>(
+                  // Fixed coins display at bottom
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Consumer<AuthProvider>(
                       builder: (context, authProvider, child) {
                         return Container(
                           padding: EdgeInsets.all(10),
@@ -563,10 +594,8 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
                         );
                       },
                     ),
-
-                    SizedBox(height: 20), // Bottom padding
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     );

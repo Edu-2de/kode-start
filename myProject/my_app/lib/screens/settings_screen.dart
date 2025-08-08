@@ -6,10 +6,10 @@ class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  _SettingsScreenState createState() => _SettingsScreenState();
+  SettingsScreenState createState() => SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class SettingsScreenState extends State<SettingsScreen> {
   bool _notifications = true;
   bool _soundEffects = true;
   bool _animations = true;
@@ -57,8 +57,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 await authProvider.logout();
 
                 // Close loading and navigate to login
-                Navigator.of(context).pop(); // Close loading
-                Navigator.of(context).pushReplacementNamed('/login');
+                if (mounted) {
+                  Navigator.of(context).pop(); // Close loading
+                  Navigator.of(context).pushReplacementNamed('/login');
+                }
               },
               child: Text('Logout', style: TextStyle(color: Colors.red)),
             ),
@@ -151,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: Container(
           padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.2),
+            color: iconColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: iconColor, size: 20),
@@ -197,7 +199,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: Container(
           padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.2),
+            color: iconColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: iconColor, size: 20),
@@ -265,8 +267,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Colors.blue.withOpacity(0.1),
-                          Colors.purple.withOpacity(0.1),
+                          Colors.blue.withValues(alpha: 0.1),
+                          Colors.purple.withValues(alpha: 0.1),
                         ],
                       ),
                     ),
@@ -276,10 +278,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.2),
+                            color: Colors.blue.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.blue.withOpacity(0.5),
+                              color: Colors.blue.withValues(alpha: 0.5),
                               width: 2,
                             ),
                           ),
@@ -317,7 +319,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.yellow.withOpacity(0.2),
+                                  color: Colors.yellow.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(

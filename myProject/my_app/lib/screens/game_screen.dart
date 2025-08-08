@@ -8,10 +8,10 @@ class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
 
   @override
-  State<GameScreen> createState() => _GameScreenState();
+  State<GameScreen> createState() => GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
+class GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   final GameService _gameService = GameService();
   bool _isUnlocking = false;
   bool _isClaimingBonus = false;
@@ -55,7 +55,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         });
       }
     } catch (e) {
-      print('Error loading user data: $e');
+      //
     }
   }
 

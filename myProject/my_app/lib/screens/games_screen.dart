@@ -10,10 +10,10 @@ class GamesScreen extends StatefulWidget {
   const GamesScreen({super.key});
 
   @override
-  _GamesScreenState createState() => _GamesScreenState();
+  GamesScreenState createState() => GamesScreenState();
 }
 
-class _GamesScreenState extends State<GamesScreen> {
+class GamesScreenState extends State<GamesScreen> {
   final GameService _gameService = GameService();
   final AuthService _authService = AuthService();
   bool _isLoading = false;
@@ -76,7 +76,7 @@ class _GamesScreenState extends State<GamesScreen> {
         });
       }
     } catch (e) {
-      print('Error checking game availability: $e');
+      // Error checking game availability: $e
     }
   }
 
@@ -86,10 +86,11 @@ class _GamesScreenState extends State<GamesScreen> {
     try {
       final token = await _authService.getToken();
       if (token == null) {
-        _showErrorDialog('Please login again');
+        if (mounted) _showErrorDialog('Please login again');
         return;
       }
 
+      if (!mounted) return;
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final response = await _gameService.playRandomCharacterGame(token);
 
@@ -98,17 +99,18 @@ class _GamesScreenState extends State<GamesScreen> {
         await authProvider.refreshProfile();
 
         // Show success dialog
-        _showCharacterDialog(response);
+        if (mounted) _showCharacterDialog(response);
 
         // Update availability
         await _checkRandomGameAvailability();
       } else {
-        _showErrorDialog(response['message'] ?? 'Failed to play game');
+        if (mounted)
+          _showErrorDialog(response['message'] ?? 'Failed to play game');
       }
     } catch (e) {
-      _showErrorDialog('Error: $e');
+      if (mounted) _showErrorDialog('Error: $e');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -282,73 +284,82 @@ class _GamesScreenState extends State<GamesScreen> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title
-              Text(
-                'Choose Your Game',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      'Choose Your Game',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Play games to unlock new characters and earn coins!',
+                      style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                    ),
+                    SizedBox(height: 30),
+
+                    // Random Character Game Card
+                    _buildGameCard(
+                      title: 'RANDOM CHARACTER',
+                      subtitle: 'Get a random character',
+                      description:
+                          'Unlock a random Rick & Morty character. Only once per day!',
+                      cost: '10 COINS',
+                      icon: Icons.shuffle,
+                      color: Colors.green,
+                      canPlay: _canPlayRandomGame,
+                      timeRemaining: _canPlayRandomGame
+                          ? null
+                          : _formatTimeRemaining(),
+                      onTap: _canPlayRandomGame && !_isLoading
+                          ? _playRandomCharacterGame
+                          : null,
+                    ),
+
+                    SizedBox(height: 20),
+
+                    // Memory Game Card
+                    _buildGameCard(
+                      title: 'MEMORY GAME',
+                      subtitle: 'Find the character card',
+                      description:
+                          '3 cards, 1 character. Memorize and find it after shuffle!',
+                      cost: '5 COINS',
+                      icon: Icons.psychology,
+                      color: Colors.purple,
+                      canPlay: true,
+                      onTap: !_isLoading
+                          ? () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MemoryGameScreen(),
+                                ),
+                              );
+                            }
+                          : null,
+                    ),
+
+                    SizedBox(height: 30), // Extra space before coins
+                  ],
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
-                'Play games to unlock new characters and earn coins!',
-                style: TextStyle(color: Colors.grey[400], fontSize: 14),
-              ),
-              SizedBox(height: 30),
+            ),
 
-              // Random Character Game Card
-              _buildGameCard(
-                title: 'RANDOM CHARACTER',
-                subtitle: 'Get a random character',
-                description:
-                    'Unlock a random Rick & Morty character. Only once per day!',
-                cost: '10 COINS',
-                icon: Icons.shuffle,
-                color: Colors.green,
-                canPlay: _canPlayRandomGame,
-                timeRemaining: _canPlayRandomGame
-                    ? null
-                    : _formatTimeRemaining(),
-                onTap: _canPlayRandomGame && !_isLoading
-                    ? _playRandomCharacterGame
-                    : null,
-              ),
-
-              SizedBox(height: 20),
-
-              // Memory Game Card
-              _buildGameCard(
-                title: 'MEMORY GAME',
-                subtitle: 'Find the character card',
-                description:
-                    '3 cards, 1 character. Memorize and find it after shuffle!',
-                cost: '5 COINS',
-                icon: Icons.psychology,
-                color: Colors.purple,
-                canPlay: true,
-                onTap: !_isLoading
-                    ? () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MemoryGameScreen(),
-                          ),
-                        );
-                      }
-                    : null,
-              ),
-
-              Spacer(),
-
-              // Coins display
-              Consumer<AuthProvider>(
+            // Fixed coins display at bottom
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Consumer<AuthProvider>(
                 builder: (context, authProvider, child) {
                   return Container(
                     padding: EdgeInsets.all(15),
@@ -378,10 +389,8 @@ class _GamesScreenState extends State<GamesScreen> {
                   );
                 },
               ),
-
-              SizedBox(height: 20), // Bottom padding
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -406,7 +415,7 @@ class _GamesScreenState extends State<GamesScreen> {
           color: Colors.grey[900],
           borderRadius: BorderRadius.circular(15),
           border: canPlay && onTap != null
-              ? Border.all(color: color.withOpacity(0.5), width: 1)
+              ? Border.all(color: color.withValues(alpha: 0.5), width: 1)
               : Border.all(color: Colors.grey[800]!, width: 1),
         ),
         child: Column(
@@ -417,7 +426,9 @@ class _GamesScreenState extends State<GamesScreen> {
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: canPlay ? color.withOpacity(0.2) : Colors.grey[800],
+                    color: canPlay
+                        ? color.withValues(alpha: 0.2)
+                        : Colors.grey[800],
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -450,7 +461,7 @@ class _GamesScreenState extends State<GamesScreen> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.2),
+                      color: color.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -475,10 +486,10 @@ class _GamesScreenState extends State<GamesScreen> {
                 width: double.infinity,
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.orange.withOpacity(0.3),
+                    color: Colors.orange.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),

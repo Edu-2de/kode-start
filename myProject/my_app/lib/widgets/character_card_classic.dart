@@ -36,7 +36,7 @@ class CharacterCardClassic extends StatelessWidget {
             colors: [const Color(0xFF2D2D30), const Color(0xFF252529)],
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.4),
@@ -94,7 +94,7 @@ class CharacterCardClassic extends StatelessWidget {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.2),
+                              Colors.black.withValues(alpha: 0.2),
                             ],
                           ),
                         ),
@@ -132,7 +132,7 @@ class CharacterCardClassic extends StatelessWidget {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: statusColor.withOpacity(0.4),
+                                color: statusColor.withValues(alpha: 0.4),
                                 blurRadius: 3,
                                 spreadRadius: 1,
                               ),

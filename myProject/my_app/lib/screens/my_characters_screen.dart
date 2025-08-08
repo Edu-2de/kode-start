@@ -5,10 +5,10 @@ class MyCharactersScreen extends StatefulWidget {
   const MyCharactersScreen({super.key});
 
   @override
-  _MyCharactersScreenState createState() => _MyCharactersScreenState();
+  MyCharactersScreenState createState() => MyCharactersScreenState();
 }
 
-class _MyCharactersScreenState extends State<MyCharactersScreen> {
+class MyCharactersScreenState extends State<MyCharactersScreen> {
   final GameService _gameService = GameService();
   List<dynamic> _characters = [];
   bool _isLoading = true;
@@ -30,7 +30,7 @@ class _MyCharactersScreenState extends State<MyCharactersScreen> {
         _characters = response['characters'] ?? [];
       });
     } catch (e) {
-      print('Error loading characters: $e');
+      // 
       _showErrorDialog('Failed to load characters');
     } finally {
       setState(() => _isLoading = false);
@@ -79,7 +79,7 @@ class _MyCharactersScreenState extends State<MyCharactersScreen> {
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: rarityColor.withOpacity(0.3), width: 1.5),
+        border: Border.all(color: rarityColor.withValues(alpha: 0.3), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +107,7 @@ class _MyCharactersScreenState extends State<MyCharactersScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
                 ),
               ),
               child: Padding(
@@ -195,7 +195,7 @@ class _MyCharactersScreenState extends State<MyCharactersScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -256,7 +256,7 @@ class _MyCharactersScreenState extends State<MyCharactersScreen> {
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.blue.withOpacity(0.3), width: 1),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,9 +342,9 @@ class _MyCharactersScreenState extends State<MyCharactersScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

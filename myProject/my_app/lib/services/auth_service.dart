@@ -29,20 +29,20 @@ class AuthService {
 
       return response.statusCode == 200;
     } catch (e) {
-      print('Connection test failed: $e');
+      // Connection test failed: $e
       return false;
     }
   }
 
   Future<AuthResponse> login(String email, String password) async {
     try {
-      print('Attempting to login user: $email');
-      print('Using API URL: $baseUrl/auth/login');
+      // Attempting to login user: $email
+      // Using API URL: $baseUrl/auth/login
 
       // Test connection first
       final canConnect = await testConnection();
       if (!canConnect) {
-        print('Cannot connect to server');
+        // Cannot connect to server
         return AuthResponse(
           success: false,
           error:
@@ -58,8 +58,8 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 10));
 
-      print('Login response status: ${response.statusCode}');
-      print('Login response body: ${response.body}');
+      //
+      //
 
       final responseData = jsonDecode(response.body);
 
@@ -85,7 +85,7 @@ class AuthService {
         );
       }
     } catch (e) {
-      print('Login error: $e');
+      //
       String errorMessage = 'Network error: ';
 
       if (e.toString().contains('SocketException') ||
@@ -108,13 +108,13 @@ class AuthService {
     String password,
   ) async {
     try {
-      print('Attempting to register user: $username');
-      print('Using API URL: $baseUrl/auth/register');
+      //
+      //
 
       // Test connection first
       final canConnect = await testConnection();
       if (!canConnect) {
-        print('Cannot connect to server');
+        //
         return AuthResponse(
           success: false,
           error:
@@ -134,8 +134,8 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 10));
 
-      print('Registration response status: ${response.statusCode}');
-      print('Registration response body: ${response.body}');
+      //
+      //
 
       final responseData = jsonDecode(response.body);
 
@@ -161,7 +161,7 @@ class AuthService {
         );
       }
     } catch (e) {
-      print('Registration error: $e');
+      //
       String errorMessage = 'Network error: ';
 
       if (e.toString().contains('SocketException') ||

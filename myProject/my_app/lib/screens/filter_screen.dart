@@ -13,10 +13,10 @@ class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
 
   @override
-  State<FilterScreen> createState() => _FilterScreenState();
+  State<FilterScreen> createState() => FilterScreenState();
 }
 
-class _FilterScreenState extends State<FilterScreen>
+class FilterScreenState extends State<FilterScreen>
     with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   List<Character> allCharacters = [];
@@ -307,7 +307,9 @@ class _FilterScreenState extends State<FilterScreen>
                                 borderRadius: BorderRadius.circular(12),
                                 border: style == AppStyle.classic
                                     ? Border.all(
-                                        color: Colors.white.withOpacity(0.1),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         width: 1,
                                       )
                                     : null,
@@ -478,7 +480,7 @@ class _FilterScreenState extends State<FilterScreen>
             border: Border.all(
               color: style == AppStyle.modern
                   ? Colors.grey[700]!
-                  : Colors.purple.withOpacity(0.3),
+                  : Colors.purple.withValues(alpha: 0.3),
             ),
           ),
           child: DropdownButtonHideUnderline(

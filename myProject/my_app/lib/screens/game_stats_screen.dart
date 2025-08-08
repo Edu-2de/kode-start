@@ -5,10 +5,10 @@ class GameStatsScreen extends StatefulWidget {
   const GameStatsScreen({super.key});
 
   @override
-  _GameStatsScreenState createState() => _GameStatsScreenState();
+  GameStatsScreenState createState() => GameStatsScreenState();
 }
 
-class _GameStatsScreenState extends State<GameStatsScreen> {
+class GameStatsScreenState extends State<GameStatsScreen> {
   final GameService _gameService = GameService();
   Map<String, dynamic>? _userStats;
   List<dynamic> _characters = [];
@@ -32,7 +32,7 @@ class _GameStatsScreenState extends State<GameStatsScreen> {
         _characters = charactersResponse['characters'] ?? [];
       });
     } catch (e) {
-      print('Error loading data: $e');
+      //
       _showErrorDialog('Failed to load statistics');
     } finally {
       setState(() => _isLoading = false);
@@ -66,50 +66,63 @@ class _GameStatsScreenState extends State<GameStatsScreen> {
     String? subtitle,
   }) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: color, size: 20),
+                child: Icon(icon, color: color, size: 18),
               ),
-              SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              SizedBox(width: 8),
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 15),
-          Text(
-            value,
-            style: TextStyle(
-              color: color,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+          SizedBox(height: 12),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: TextStyle(
+                color: color,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           if (subtitle != null) ...[
-            SizedBox(height: 5),
-            Text(
-              subtitle,
-              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+            SizedBox(height: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                subtitle,
+                style: TextStyle(color: Colors.grey[400], fontSize: 11),
+              ),
             ),
           ],
         ],
@@ -179,7 +192,7 @@ class _GameStatsScreenState extends State<GameStatsScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -212,7 +225,7 @@ class _GameStatsScreenState extends State<GameStatsScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: color.withOpacity(0.5),
+                            color: color.withValues(alpha: 0.5),
                             width: 1,
                           ),
                           image: DecorationImage(
@@ -306,7 +319,10 @@ class _GameStatsScreenState extends State<GameStatsScreen> {
               decoration: BoxDecoration(
                 color: Colors.grey[850],
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: color.withOpacity(0.3), width: 1),
+                border: Border.all(
+                  color: color.withValues(alpha: 0.3),
+                  width: 1,
+                ),
               ),
               child: Row(
                 children: [
@@ -343,7 +359,7 @@ class _GameStatsScreenState extends State<GameStatsScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: color.withOpacity(0.2),
+                                color: color.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -443,9 +459,9 @@ class _GameStatsScreenState extends State<GameStatsScreen> {
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               crossAxisCount: 2,
-                              mainAxisSpacing: 15,
-                              crossAxisSpacing: 15,
-                              childAspectRatio: 1.1,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
+                              childAspectRatio: 1.0, // Better fit for content
                               children: [
                                 _buildStatCard(
                                   title: 'Total Characters',

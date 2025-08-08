@@ -13,7 +13,6 @@ class CharacterDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final style = themeProvider.currentStyle;
-    print('Building CharacterDetailScreen with style: $style');
 
     if (style == AppStyle.modern) {
       return _buildModern(context);
@@ -130,7 +129,7 @@ class CharacterDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha: 0.4),
                           blurRadius: 15,
                           offset: const Offset(0, 8),
                         ),
@@ -356,7 +355,7 @@ class CharacterDetailScreen extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       width: 1,
                     ),
                     boxShadow: [
@@ -424,7 +423,7 @@ class CharacterDetailScreen extends StatelessWidget {
                                     end: Alignment.bottomCenter,
                                     colors: [
                                       Colors.transparent,
-                                      Colors.black.withOpacity(0.2),
+                                      Colors.black.withValues(alpha: 0.2),
                                     ],
                                   ),
                                 ),
@@ -459,7 +458,9 @@ class CharacterDetailScreen extends StatelessWidget {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: statusColor.withOpacity(0.4),
+                                        color: statusColor.withValues(
+                                          alpha: 0.4,
+                                        ),
                                         blurRadius: 3,
                                         spreadRadius: 1,
                                       ),
@@ -528,7 +529,7 @@ class CharacterDetailScreen extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
