@@ -119,8 +119,9 @@ class MemoryGameScreenState extends State<MemoryGameScreen> {
         // Show result dialog
         if (mounted) _showResultDialog(response);
       } else {
-        if (mounted)
+        if (mounted) {
           _showErrorDialog(response['message'] ?? 'Failed to submit guess');
+        }
       }
     } catch (e) {
       if (mounted) _showErrorDialog('Error: $e');

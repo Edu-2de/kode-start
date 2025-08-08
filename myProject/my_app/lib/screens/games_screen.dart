@@ -104,8 +104,9 @@ class GamesScreenState extends State<GamesScreen> {
         // Update availability
         await _checkRandomGameAvailability();
       } else {
-        if (mounted)
+        if (mounted) {
           _showErrorDialog(response['message'] ?? 'Failed to play game');
+        }
       }
     } catch (e) {
       if (mounted) _showErrorDialog('Error: $e');

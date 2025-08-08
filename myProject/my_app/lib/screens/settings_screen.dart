@@ -50,6 +50,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 );
 
                 // Perform logout
+                final navigator = Navigator.of(context);
                 final authProvider = Provider.of<AuthProvider>(
                   context,
                   listen: false,
@@ -58,8 +59,8 @@ class SettingsScreenState extends State<SettingsScreen> {
 
                 // Close loading and navigate to login
                 if (mounted) {
-                  Navigator.of(context).pop(); // Close loading
-                  Navigator.of(context).pushReplacementNamed('/login');
+                  navigator.pop(); // Close loading
+                  navigator.pushReplacementNamed('/login');
                 }
               },
               child: Text('Logout', style: TextStyle(color: Colors.red)),

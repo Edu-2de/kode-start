@@ -197,6 +197,8 @@ class SignUpScreenState extends State<SignUpScreen> {
                           listen: false,
                         );
 
+                        final navigator = Navigator.of(context);
+                        final messenger = ScaffoldMessenger.of(context);
                         final errorMessage = await authProvider.register(
                           _usernameController.text,
                           _emailController.text,
@@ -204,8 +206,8 @@ class SignUpScreenState extends State<SignUpScreen> {
                         );
 
                         if (errorMessage == null && mounted) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          navigator.pop();
+                          messenger.showSnackBar(
                             SnackBar(
                               content: Text(
                                 'Account created successfully! Please login.',
@@ -214,7 +216,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                             ),
                           );
                         } else if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             SnackBar(
                               content: Text(
                                 errorMessage ?? 'Registration failed',
