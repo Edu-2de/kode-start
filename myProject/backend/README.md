@@ -2,8 +2,7 @@
 
 A Node.js/Express.js RESTful API for a Rick & Morty character collection game with authentication, game mechanics, and coin economy.
 
-<img src="./images/readme/diagram1.png" alt="Architecture Diagram" width="600">
-<img src="./images/readme/diagram2.png" alt="Architecture Diagram" width="600">
+<img src="./images/readme/architecture-diagram.png" alt="System Architecture" width="500">
 
 ## 🚀 Quick Start
 
@@ -11,16 +10,14 @@ A Node.js/Express.js RESTful API for a Rick & Morty character collection game wi
 - Node.js 16+
 - PostgreSQL 13+
 
-### Installation
+### Installation & Setup
 
 ```bash
 cd myProject/backend
 npm install
 ```
 
-### Environment Setup
 Create `.env` file:
-
 ```env
 DATABASE_URL=postgresql://username:password@localhost:5432/rickmorty_db
 JWT_SECRET=your_very_secure_jwt_secret_here_min_32_chars
@@ -28,147 +25,133 @@ PORT=3001
 CORS_ORIGIN=http://localhost:3000,http://10.0.2.2:3001
 ```
 
-<img src="./images/readme/env.png" alt="Architecture Diagram" width="600">
+<img src="./images/readme/env-setup.png" alt="Environment Setup" width="500">
 
 ### Run
 ```bash
-npm run dev  # Development
-npm start    # Production
+npm run dev    
+npm start      
 ```
 
-<!-- ADD VIDEO: Quick demo of backend startup process and health check endpoint -->
+<img src="./images/readme/startup-demo.gif" alt="Backend Startup Demo" width="900">
 
 ## 🎯 Core Features
 
-### Authentication System
-- JWT-based auth with secure password hashing
-- User registration and login
+- **JWT Authentication** with secure password hashing
+- **Daily Character Game** - Unlock random Rick & Morty characters (10 coins)
+- **Memory Card Game** - Match character pairs for rewards (5 coins entry)
+- **Daily Bonus System** - Free coins every 24 hours
+- **Character Collection** with rarity system (Common → Rare → Epic → Legendary)
+- **Coin Economy** with transaction tracking
 
-### Game Mechanics
-- **Daily Character Game**: Unlock random characters (10 coins/day)
-- **Memory Card Game**: Match character pairs (5 coins/session)
-- **Daily Bonus**: Free coins every 24 hours
-
-<!-- ADD IMAGE: Game flow diagram showing coin system and character unlock process -->
-
-### Character Collection
-- Rick & Morty API integration
-- Rarity system (Common → Rare → Epic → Legendary)
-- Duplicate prevention
-
-<!-- ADD IMAGE: Character rarity distribution chart or example character cards with rarities -->
+<img src="./images/readme/game-flow.png" alt="Game Flow Diagram" width="500">
 
 ## 📡 API Endpoints
 
 ### Authentication
 ```
-POST /api/auth/register    # User registration
+POST /api/auth/register    # Register new user
 POST /api/auth/login       # User login
-GET  /api/auth/profile     # Get user profile
+GET  /api/auth/profile     # Get user profile (protected)
 ```
 
-### Game Routes (Protected)
+### Game Routes (All Protected)
 ```
-POST /api/game/random-character    # Play daily character game
-POST /api/game/memory-game/start   # Start memory game
-POST /api/game/memory-game/guess   # Submit memory guess
-GET  /api/game/characters          # Get user's characters
-GET  /api/game/stats              # User statistics
-POST /api/game/daily-bonus        # Claim daily bonus
+POST /api/game/random-character    # Play daily character unlock
+POST /api/game/memory-game/start   # Start memory game session
+POST /api/game/memory-game/guess   # Submit memory game guess
+GET  /api/game/characters          # Get user's character collection
+GET  /api/game/stats              # User game statistics
+POST /api/game/daily-bonus        # Claim daily bonus coins
 ```
 
-<!-- ADD IMAGE: API endpoint testing in Postman showing request/response examples -->
+<img src="./images/readme/api-testing.png" alt="API Testing Example" width="300">
 
 ## 🗄️ Database Schema
 
-### Key Tables
-- **users**: Authentication, coins, profile data
-- **unlocked_characters**: User's character collection
-- **daily_character_games**: Daily game tracking
-- **memory_game_results**: Memory game statistics
-- **coin_transactions**: Complete transaction history
+**8 main tables** handling users, characters, games, and transactions:
 
-<!-- ADD IMAGE: Database ER diagram showing table relationships -->
+- `users` - Authentication & coin balance
+- `unlocked_characters` - User's character collection
+- `daily_character_games` - Daily game sessions
+- `memory_game_results` - Memory game statistics
+- `coin_transactions` - All coin movements
+- `daily_bonuses` - Daily bonus claims
+- `daily_logins` - Login tracking
+- `user_sessions` - Session management
 
-## 🎮 Game Logic
+<img src="./images/readme/database-schema.png" alt="Database ER Diagram" width="700">
 
-### Character Unlock Game
-1. Costs 10 coins (once per day)
-2. Fetches random character from Rick & Morty API
-3. Assigns rarity: 5% Legendary, 10% Epic, 25% Rare, 60% Common
-4. Adds to collection or notifies if owned
+## 🎮 Game Mechanics
 
-<!-- ADD VIDEO: Screen recording of character unlock game flow -->
+### Character Unlock (Daily)
+1. **Cost**: 10 coins per day
+2. **Source**: Rick & Morty API (826+ characters)
+3. **Rarity Distribution**: 60% Common, 25% Rare, 10% Epic, 5% Legendary
+4. **Duplicates**: Returns coins if character already owned
 
-### Memory Card Game
-1. Costs 5 coins per session
-2. 8 character pairs (16 cards total)
-3. 60-second time limit
-4. Performance-based coin rewards
-
-<!-- ADD VIDEO: Memory game gameplay demonstration -->
+### Memory Game
+1. **Cost**: 5 coins per session
+2. **Format**: 8 character pairs (16 cards)
+3. **Time Limit**: 60 seconds
+4. **Rewards**: Performance-based coin rewards
 
 ## 🔒 Security
 
-- JWT tokens with 1-hour expiration
-- bcrypt password hashing (10 salt rounds)
-- SQL injection protection
-- Input validation and sanitization
-- CORS configuration
-
-<!-- ADD IMAGE: Security flow diagram showing JWT validation process -->
+- **JWT tokens** (1-hour expiration)
+- **bcrypt hashing** (10 salt rounds)
+- **SQL injection protection** (parameterized queries)
+- **Input validation** on all endpoints
+- **CORS configured** for Flutter frontend
 
 ## 📁 Project Structure
 
 ```
 backend/
 ├── src/
-│   ├── controllers/     # Business logic
-│   ├── database/        # DB connection & schema
-│   ├── middleware/      # Auth middleware
-│   ├── routes/          # API endpoints
-│   └── app.js          # Express setup
+│   ├── controllers/     # Route handlers & business logic
+│   ├── database/        # DB connection & SQL schema
+│   ├── middleware/      # JWT authentication middleware
+│   ├── routes/          # API route definitions
+│   └── app.js          # Express app configuration
 ├── server.js           # Entry point
+├── package.json        # Dependencies & scripts
 └── .env               # Environment variables
 ```
 
-## 🧪 Testing
+## 🧪 Quick Test
 
-### Quick API Test
 ```bash
 # Health check
 curl http://localhost:3001/health
 
-# Register user
+# Test registration
 curl -X POST http://localhost:3001/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"first_name":"Test","email":"test@example.com","password":"password123"}'
+  -d '{"username":"testuser","email":"test@example.com","password":"password123"}'
 ```
 
-<!-- ADD VIDEO: API testing demonstration using curl or Postman -->
+<img src="./images/readme/curl-testing.png" alt="cURL Testing Example" width="700">
 
-## 🚀 Deployment
+## 🚀 Production Setup
 
-For production:
 ```env
 NODE_ENV=production
 DATABASE_URL=your_production_database_url
-JWT_SECRET=your_production_secret
+JWT_SECRET=your_production_secret_key
+PORT=3001
 ```
 
-Database tables are auto-created on startup.
+Database tables auto-create on first startup.
 
-<!-- ADD IMAGE: Deployment architecture diagram or production environment setup -->
+## 🔧 Common Issues
 
-## 🔧 Troubleshooting
+- **DB Connection Failed**: Check PostgreSQL running & DATABASE_URL format
+- **JWT Invalid**: Verify JWT_SECRET set & token not expired  
+- **CORS Blocked**: Add your frontend URL to CORS_ORIGIN
 
-### Common Issues
-- **Database Connection**: Check PostgreSQL is running and DATABASE_URL is correct
-- **JWT Errors**: Verify JWT_SECRET is set and tokens aren't expired
-- **CORS Issues**: Configure CORS_ORIGIN for your frontend URL
-
-<!-- ADD IMAGE: Common error messages and their solutions -->
+<img src="./images/readme/troubleshooting.png" alt="Common Error Solutions" width="650">
 
 ---
 
-**Built with Express.js, PostgreSQL, and JWT Authentication**
+**Tech Stack**: Express.js • PostgreSQL • JWT • bcrypt • Rick & Morty API
