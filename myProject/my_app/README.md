@@ -1,4 +1,4 @@
-# Rick & Morty Flutter App
+# Rick & Morty Game Flutter App
 
 A modern Flutter application for collecting Rick & Morty characters through interactive games with dark UI and real-time mechanics.
 
@@ -136,7 +136,7 @@ class AuthProvider extends ChangeNotifier {
 }
 ```
 
-<!-- ADD IMAGE: Provider architecture diagram -->
+<img src="./assets/readme/providerArch.png" alt="MemoryGameW" width="300">
 
 ### API Integration
 - **RESTful API calls** to backend
@@ -149,8 +149,6 @@ class AuthProvider extends ChangeNotifier {
 - **Animated transitions** between screens
 - **Dark theme** with green accent colors
 - **Responsive design** for different screen sizes
-
-<!-- ADD IMAGE: UI component showcase showing cards, buttons, and animations -->
 
 ## 🔧 Configuration
 
@@ -170,9 +168,6 @@ static const String baseUrl = 'http://YOUR_BACKEND_IP:3001/api';
 static const Color primaryColor = Colors.green;
 static const Color backgroundColor = Colors.black;
 ```
-
-<!-- ADD IMAGE: Theme configuration showing color scheme -->
-
 ## 🎨 Game Mechanics
 
 ### Coin System
@@ -186,8 +181,6 @@ static const Color backgroundColor = Colors.black;
 - **Rare**: 25% chance (blue border)  
 - **Epic**: 10% chance (purple border)
 - **Legendary**: 5% chance (gold border)
-
-<!-- ADD IMAGE: Character rarity examples showing different border colors -->
 
 ## 📱 Platform Support
 
@@ -209,8 +202,6 @@ flutter run --debug
 flutter build apk
 ```
 
-<!-- ADD IMAGE: Testing setup and debug console -->
-
 ## 🚀 Build & Deploy
 
 ### Android APK
@@ -223,8 +214,6 @@ flutter build apk --release
 flutter build ios --release
 ```
 
-<!-- ADD IMAGE: Build process and generated APK/IPA files -->
-
 ## 🔧 Common Issues
 
 - **API Connection**: Check backend is running and IP is correct
@@ -232,7 +221,6 @@ flutter build ios --release
 - **Build Errors**: Run `flutter clean && flutter pub get`
 - **Hot Reload Issues**: Restart app in debug mode
 
-<!-- ADD IMAGE: Troubleshooting guide with common error messages -->
 
 ## 🎯 Future Features
 
