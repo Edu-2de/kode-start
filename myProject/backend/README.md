@@ -66,6 +66,7 @@ POST /api/game/daily-bonus        # Claim daily bonus coins
 ```
 
 <img src="./images/readme/api-testing.png" alt="API Testing Example" width="300">
+<img src="./images/readme/api-testing.gif" alt="API Testing Example" width="900">
 
 ## 🗄️ Database Schema
 

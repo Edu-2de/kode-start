@@ -281,28 +281,40 @@ class HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       child: Row(
         children: [
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: _toggleDrawer,
-              borderRadius: BorderRadius.circular(4),
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: const BoxDecoration(color: Colors.transparent),
-                child: const Icon(Icons.menu, color: Colors.white, size: 24),
+          Transform.translate(
+            offset: const Offset(0, -15), 
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _toggleDrawer,
+                borderRadius: BorderRadius.circular(4),
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: const BoxDecoration(color: Colors.transparent),
+                  child: const Icon(Icons.menu, color: Colors.white, size: 24),
+                ),
               ),
             ),
           ),
           const Spacer(),
-          Container(
+          Padding(
+          padding: const EdgeInsets.only(left: 25), 
+          child:  Container(
             width: style == AppStyle.modern ? 120 : 60,
             height: style == AppStyle.modern ? 72 : 40,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
             child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+            ),
           ),
-          const Spacer(),
-          const ProfileMenu(),
+           const Spacer(),
+           Transform.translate(
+            offset: const Offset(0, -15), 
+            child: Transform.scale(
+              scale: 0.8, 
+              child: const ProfileMenu(),
+            ),
+          ),
         ],
       ),
     );
@@ -383,7 +395,7 @@ class HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
               mainAxisSpacing: style == AppStyle.modern ? 12 : 8,
-              childAspectRatio: style == AppStyle.modern ? 1.8 : 4.0,
+              childAspectRatio: style == AppStyle.modern ? 2.2 : 4.0,
             ),
             itemCount:
                 characters.length + (hasMore && !isThemeChanging ? 1 : 0),
