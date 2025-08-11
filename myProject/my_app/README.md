@@ -2,8 +2,8 @@
 
 A modern Flutter application for collecting Rick & Morty characters through interactive games with dark UI and real-time mechanics.
 
-<img src="./assets/readme/mockup.png" alt="Mockup Samsung" width="300">
-<img src="./assets/readme/mockupClassic.png" alt="Mockup Samsung Theme Classic" width="300">
+<img src="./assets/readme/mockup.png" alt="MockupSamsung" width="300">
+<img src="./assets/readme/mockupClassic.png" alt="MockupSamsungThemeClassic" width="300">
 
 ## 🚀 Quick Start
 
@@ -25,7 +25,7 @@ flutter pub get
 flutter run
 ```
 
-<img src="./assets/readme/demoCell.gif" alt="Mockup Samsung" width="300">
+<img src="./assets/readme/demoCell.gif" alt="MockupSamsung" width="300">
 
 ### Backend Connection
 
@@ -47,7 +47,7 @@ The app connects to the backend API:
 - **Dark Theme** with modern UI components
 - **Real-time Coin Balance** synchronized with backend
 
-<img src="./assets/readme/demoGames.gif" alt="Demo Games" width="300">
+<img src="./assets/readme/demoGames.gif" alt="DemoGames" width="300">
 
 ## 📱 App Structure
 
@@ -73,7 +73,7 @@ lib/
     └── character_card_modern.dart # Character display
 ```
 
-<img src="./assets/readme/demoScreens.gif" alt="Demo Screens" width="300">
+<img src="./assets/readme/demoScreens.gif" alt="DemoScreens" width="300">
 
 ## 🎯 Key Screens
 
@@ -82,7 +82,8 @@ lib/
 - **Secure token storage** using SharedPreferences
 - **Auto-login** on app restart
 
-<!-- ADD IMAGE: Login and register screen screenshots -->
+<img src="./assets/readme/loginScreen.png" alt="Login" width="300">
+<img src="./assets/readme/registerScreen.png" alt="Login" width="300">
 
 ### Home Dashboard
 - **Coin balance** display
@@ -90,14 +91,14 @@ lib/
 - **Recent activity** overview
 - **Navigation drawer** menu
 
-<!-- ADD IMAGE: Home screen showing dashboard layout -->
+<img src="./assets/readme/menuScreen.png" alt="Login" width="300">
 
 ### Games Hub
 - **Available games** with cost display
 - **Daily timers** for game availability
 - **Performance stats** tracking
 
-<!-- ADD VIDEO: Game selection and daily timer demonstration -->
+<img src="./assets/readme/gameAreaDemo.gif" alt="DemoGameScreen" width="300">
 
 ### Character Collection
 - **Grid layout** of unlocked characters
@@ -105,7 +106,7 @@ lib/
 - **Character details** with Rick & Morty API data
 - **Collection progress** tracking
 
-<!-- ADD IMAGE: Character collection screen showing different rarities -->
+<img src="./assets/readme/characterCollectionDemo.gif" alt="DemoCharacterCollectionScreen" width="300">
 
 ### Memory Game
 - **8 character pairs** (16 cards total)
@@ -113,7 +114,9 @@ lib/
 - **Performance-based rewards** (5-20 coins)
 - **Flip animations** and match effects
 
-<!-- ADD GIF: Memory game gameplay showing card flipping and matching -->
+<img src="./assets/readme/memoryGame.png" alt="MemoryGame" width="300">
+<img src="./assets/readme/memoryGameCorrect.png" alt="MemoryGameC" width="300">
+<img src="./assets/readme/memoryGameWrong.png" alt="MemoryGameW" width="300">
 
 ## ⚙️ Technical Features
 
