@@ -3,7 +3,7 @@
 A modern Flutter application for collecting Rick & Morty characters through interactive games with dark UI and real-time mechanics.
 
 <img src="./assets/readme/mockup.png" alt="Mockup Samsung" width="300">
-<img src="./assets/readme/mockupClassic.png" alt="Mockup Samsung" width="300">
+<img src="./assets/readme/mockupClassic.png" alt="Mockup Samsung Theme Classic" width="300">
 
 ## 🚀 Quick Start
 
@@ -47,7 +47,7 @@ The app connects to the backend API:
 - **Dark Theme** with modern UI components
 - **Real-time Coin Balance** synchronized with backend
 
-<!-- ADD IMAGE: Feature overview showing game modes and UI elements -->
+<img src="./assets/readme/demoGames.gif" alt="Demo Games" width="300">
 
 ## 📱 App Structure
 
@@ -73,7 +73,7 @@ lib/
     └── character_card_modern.dart # Character display
 ```
 
-<!-- ADD IMAGE: App architecture diagram showing Provider pattern and API flow -->
+<img src="./assets/readme/demoScreens.gif" alt="Demo Screens" width="300">
 
 ## 🎯 Key Screens
 
