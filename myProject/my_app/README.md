@@ -2,7 +2,8 @@
 
 A modern Flutter application for collecting Rick & Morty characters through interactive games with dark UI and real-time mechanics.
 
-<!-- ADD IMAGE: App screenshots showing main screens (Home, Games, Collection) in a mobile mockup -->
+<img src="./assets/readme/mockup.png" alt="Mockup Samsung" width="300">
+<img src="./assets/readme/mockupClassic.png" alt="Mockup Samsung" width="300">
 
 ## 🚀 Quick Start
 
