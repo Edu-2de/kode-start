@@ -6,7 +6,7 @@ import 'character_detail_screen.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/character_card_modern.dart';
 import '../widgets/character_card_classic.dart';
-import '../widgets/profile_menu_new.dart';
+import '../widgets/profile_menu.dart';
 import '../providers/theme_provider.dart';
 
 class FilterScreen extends StatefulWidget {

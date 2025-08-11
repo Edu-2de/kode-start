@@ -25,7 +25,7 @@ flutter pub get
 flutter run
 ```
 
-<!-- ADD GIF: Quick demo of app startup and main navigation flow -->
+<img src="./assets/readme/demoCell.gif" alt="Mockup Samsung" width="300">
 
 ### Backend Connection
 
@@ -33,8 +33,6 @@ The app connects to the backend API:
 - **Android Emulator**: `http://10.0.2.2:3001`
 - **iOS Simulator**: `http://localhost:3001`
 - **Physical Device**: Update IP in service files
-
-<!-- ADD IMAGE: Screenshot of service configuration showing API endpoint setup -->
 
 ## 🎮 Core Features
 
