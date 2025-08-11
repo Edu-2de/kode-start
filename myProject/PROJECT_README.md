@@ -1,4 +1,4 @@
-# Rick & Morty Character Collector
+# Rick & Morty Game Collector
 
 A full-stack mobile application built with Flutter and Node.js that allows users to collect Rick & Morty characters through interactive games.
 
@@ -135,5 +135,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 For support, email support@rickmortyapp.com or create an issue in the GitHub repository.
 
 ---
-
-**Developed with ❤️ by the Rick & Morty Game Team**
